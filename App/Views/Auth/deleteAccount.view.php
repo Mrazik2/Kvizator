@@ -12,24 +12,18 @@ $view->setLayout('auth');
         <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
             <div class="card card-signin my-5">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Login</h5>
+                    <h5 class="card-title text-center">Delete Account</h5>
                     <div class="text-center text-danger mb-3" id="message">
                         <?= @$message ?>
                     </div>
-                    <form class="form-signin" method="post" action="<?= $link->url("login") ?>">
+                    <form class="form-delete-password" method="post" action="<?= $link->url("deleteAccount") ?>">
                         <div class="form-label-group mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input name="username" type="text" id="username" class="form-control" placeholder="Username"
-                                   required autofocus>
-                        </div>
-
-                        <div class="form-label-group mb-3">
-                            <label for="password" class="form-label">Password</label>
+                            <label for="password" class="form-label">Confirm Password</label>
                             <input name="password" type="password" id="password" class="form-control"
-                                   placeholder="Password" required>
+                                   placeholder="Password" required autofocus>
                         </div>
                         <div class="text-center">
-                            <button class="btn btn-primary" type="submit" name="submit">Log in
+                            <button class="btn btn-danger" type="submit" name="submit">Delete Account
                             </button>
                         </div>
                     </form>

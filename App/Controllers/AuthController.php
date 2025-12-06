@@ -3,11 +3,14 @@
 namespace App\Controllers;
 
 use App\Configuration;
+use App\Models\User;
 use Exception;
 use Framework\Core\BaseController;
+use Framework\DB\Connection;
 use Framework\Http\Request;
 use Framework\Http\Responses\Response;
 use Framework\Http\Responses\ViewResponse;
+use PDO;
 
 /**
  * Class AuthController
@@ -49,11 +52,11 @@ class AuthController extends BaseController
         if ($request->hasValue('submit')) {
             $logged = $this->app->getAuthenticator()->login($request->value('username'), $request->value('password'));
             if ($logged) {
-                return $this->redirect($this->url("admin.index"));
+                return $this->redirect($this->url("account.index"));
             }
         }
 
-        $message = $logged === false ? 'Bad username or password' : null;
+        $message = $logged === false ? 'Zlé meno alebo heslo' : null;
         return $this->html(compact("message"));
     }
 
@@ -68,6 +71,89 @@ class AuthController extends BaseController
     public function logout(Request $request): Response
     {
         $this->app->getAuthenticator()->logout();
+        return $this->html();
+    }
+
+    public function register(Request $request): Response
+    {
+        if ($request->hasValue('submit')) {
+            $username = $request->value('username');
+            $password = $request->value('password');
+            $password_confirm = $request->value('password_confirm');
+
+            if (strlen($username) < 3 || strlen($username) > 12) {
+                return $this->html(['message' => 'Meno používateľa musí mať 3–12 znakov.']);
+            }
+            if (strlen($password) < 8 || strlen($password) > 30) {
+                return $this->html(['message' => 'Heslo musí mať aspoň 8 a maximílne 30 znakov.']);
+            }
+            if (!preg_match('/\d/', $password)) {
+                return $this->html(['message' => 'Heslo musí obsahovať aspoň jednu číslicu.']);
+            }
+            if (User::getOne($username) !== null) {
+                return $this->html(['message' => 'Používateľ s týmto menom už existuje.']);
+            }
+            if ($password !== $password_confirm) {
+                return $this->html(['message' => 'Heslá sa nezhodujú.']);
+            }
+
+            $user = new User();
+            $user->setUsername($request->value('username'));
+            $user->setPassword(password_hash($request->value('password'), PASSWORD_DEFAULT));
+            $user->save();
+            $logged = $this->app->getAuthenticator()->login($request->value('username'), $request->value('password'));
+            if (!$logged) {
+                throw new \RuntimeException('Registration succeeded but automatic login failed.');
+            }
+            return $this->redirect($this->url("account.index"));
+        }
+
+        return $this->html();
+    }
+
+    public function changePassword(Request $request): Response
+    {
+        if ($request->hasValue('submit')) {
+            $user = $this->user->getIdentity();
+            if ($user !== null) {
+                $userModel = User::getOne($user->getName());
+                if ($userModel === null) {
+                    // dufam unreachable
+                    throw new \RuntimeException('Nenájdený prihlásený používateľ.');
+                }
+                if (!password_verify($request->value('old_password'), $userModel->getPassword())) {
+                    return $this->html(['message' => 'Nesprávne staré heslo.']);
+                }
+                if ($request->value('new_password') === $request->value('old_password')) {
+                    return $this->html(['message' => 'Nové heslo musí byť odlišné od starého hesla.']);
+                }
+
+                $userModel->setPassword(password_hash($request->value('new_password'), PASSWORD_DEFAULT));
+                $userModel->save();
+                return $this->redirect($this->url("account.settings"));
+            }
+        }
+
+        return $this->html();
+    }
+
+    public function deleteAccount(Request $request): Response
+    {
+        if ($request->hasValue('submit')) {
+            $user = $this->user->getIdentity();
+            if ($user !== null) {
+                $userModel = User::getOne($user->getName());
+                if ($userModel !== null) {
+                    if (!password_verify($request->value('password'), $userModel->getPassword())) {
+                        return $this->html(['message' => 'Nesprávne heslo']);
+                    }
+                    $userModel->delete();
+                    $this->app->getAuthenticator()->logout();
+                    return $this->redirect($this->url("home.index"));
+                }
+            }
+        }
+
         return $this->html();
     }
 }
