@@ -52,7 +52,7 @@ class AuthController extends BaseController
         if ($request->hasValue('submit')) {
             $logged = $this->app->getAuthenticator()->login($request->value('username'), $request->value('password'));
             if ($logged) {
-                return $this->redirect($this->url("account.index"));
+                return $this->redirect($this->url("home.index"));
             }
         }
 
@@ -71,7 +71,7 @@ class AuthController extends BaseController
     public function logout(Request $request): Response
     {
         $this->app->getAuthenticator()->logout();
-        return $this->html();
+        return $this->redirect($this->url("home.index"));
     }
 
     public function register(Request $request): Response
@@ -90,7 +90,7 @@ class AuthController extends BaseController
             if (!preg_match('/\d/', $password)) {
                 return $this->html(['message' => 'Heslo musí obsahovať aspoň jednu číslicu.']);
             }
-            if (User::getOne($username) !== null) {
+            if (count(User::getAll("username = ?", [$username])) !== 0) {
                 return $this->html(['message' => 'Používateľ s týmto menom už existuje.']);
             }
             if ($password !== $password_confirm) {
@@ -105,7 +105,7 @@ class AuthController extends BaseController
             if (!$logged) {
                 throw new \RuntimeException('Registration succeeded but automatic login failed.');
             }
-            return $this->redirect($this->url("account.index"));
+            return $this->redirect($this->url("home.index"));
         }
 
         return $this->html();
@@ -142,7 +142,7 @@ class AuthController extends BaseController
         if ($request->hasValue('submit')) {
             $user = $this->user->getIdentity();
             if ($user !== null) {
-                $userModel = User::getOne($user->getName());
+                $userModel = User::getAll("username = ?", [$user->getName()])[0] ?? null;
                 if ($userModel !== null) {
                     if (!password_verify($request->value('password'), $userModel->getPassword())) {
                         return $this->html(['message' => 'Nesprávne heslo']);

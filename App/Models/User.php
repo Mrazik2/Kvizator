@@ -7,10 +7,20 @@ use Framework\Core\Model;
 
 class User extends Model implements IIdentity
 {
-    protected static ?string $primaryKey = 'username';
+
+    protected ?int $id;
     protected ?string $username;
     protected ?string $password;
 
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
     public function getUsername(): string
     {
         return $this->username;

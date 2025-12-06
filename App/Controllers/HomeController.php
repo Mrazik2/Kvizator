@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\Quiz;
+use App\Models\User;
 use Framework\Core\BaseController;
 use Framework\Http\Request;
 use Framework\Http\Responses\Response;
@@ -39,7 +41,7 @@ class HomeController extends BaseController
      */
     public function index(Request $request): Response
     {
-        return $this->html();
+        return $this->redirect($this->url('quiz.others'));
     }
 
     /**
@@ -50,8 +52,5 @@ class HomeController extends BaseController
      *
      * @return Response The response object containing the rendered HTML for the contact page.
      */
-    public function contact(Request $request): Response
-    {
-        return $this->html();
-    }
+
 }

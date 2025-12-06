@@ -12,7 +12,7 @@ class Authenticator extends SessionAuthenticator
 
     protected function authenticate(string $username, string $password): ?IIdentity
     {
-        $user = User::getOne($username);
+        $user = User::getAll("username = ?", [$username])[0] ?? null;
         if ($user === null) {
             return null;
         }
