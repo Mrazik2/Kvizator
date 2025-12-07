@@ -8,12 +8,13 @@
 <html lang="sk">
 <head>
     <title><?= App\Configuration::APP_NAME ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Favicons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="<?= $link->asset('favicons/apple-touch-icon.png') ?>">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= $link->asset('favicons/favicon-32x32.png') ?>">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= $link->asset('favicons/favicon-16x16.png') ?>">
-    <link rel="manifest" href="<?= $link->asset('favicons/site.webmanifest') ?>">
-    <link rel="shortcut icon" href="<?= $link->asset('favicons/favicon.ico') ?>">
+
+    <link rel="icon" type="image/svg+xml" href="<?= $link->asset('favicons/app-icon.svg') ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= $link->asset('favicons/app-icon-16.png') ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= $link->asset('favicons/app-icon-32.png') ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?= $link->asset('favicons/app-icon-192.png') ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
@@ -25,47 +26,78 @@
 <body>
 
 <!-- small sentinel before navbar observed by IntersectionObserver; 1px tall and does not affect layout -->
-<div id="navSentinel" style="height:1px; width:100%;"></div>
+<div id="navSentinel"></div>
 
 <!-- keep nav sticky but make background/shadow part of outer nav so it covers full width and is opaque -->
-<nav class="navbar navbar-expand-sm sticky-top bg-light shadow-sm" style="z-index:1020;" id="mainNavbar">
+<nav class="navbar navbar-expand-sm sticky-top bg-light shadow-sm" id="mainNavbar">
     <div class="container">
 
-        <ul class="navbar-nav ms-left">
-            <li class="nav-item">
-                <a class="nav-link" href="<?= $link->url('home.index') ?>">Home</a>
-            </li>
-        </ul>
-        <?php if ($user->isLoggedIn()) { ?>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <?= htmlspecialchars($user->getName(), ENT_QUOTES, 'UTF-8') ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuDropdown">
-                        <li><a class="dropdown-item" href="<?= $link->url('account.settings') ?>">Settings</a></li>
-                        <li><a class="dropdown-item" href="<?= $link->url('quiz.edit') ?>">Create Quiz</a></li>
-                        <li><a class="dropdown-item" href="<?= $link->url('quiz.own') ?>">Edit Quiz</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="<?= $link->url('auth.logout') ?>">Log out</a></li>
-                    </ul>
-                </li>
-            </ul>
-        <?php } else { ?>
-            <ul class="navbar-nav ms-auto d-flex flex-row gap-2 flex-nowrap align-items-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= App\Configuration::LOGIN_URL ?>">Log in</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= $link->url("auth.register") ?>">Register</a>
-                </li>
-            </ul>
-        <?php } ?>
+        <!-- Brand: square book icon + site name (clickable to home) -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $link->url('home.index') ?>">
+            <span class="logo-square d-inline-flex align-items-center justify-content-center">
+                <!-- simple book SVG icon (keeps visual small and sharp) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M1 2.828c.885-.37 2.154-.828 4-.828 1.243 0 2.09.33 2.5.5V13.5c-.41-.17-1.257-.5-2.5-.5-1.846 0-3.115.458-4 .828V2.828z"/>
+                    <path d="M9 2.5V13.5c.41-.17 1.257-.5 2.5-.5 1.846 0 3.115.458 4 .828V2.5a1 1 0 0 0-1-1c-1.893 0-3.392.4-4.5.9C10.272 2.001 9.57 2.5 9 2.5z"/>
+                </svg>
+            </span>
+            <span class="brand-text fw-bold">Kvizátor</span>
+        </a>
+
+        <!-- Toggler for small viewports: toggles the user/login menu -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarUserMenu" aria-controls="navbarUserMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarUserMenu">
+            <?php if ($user->isLoggedIn()) { ?>
+                <!-- Small-screen vertical menu (visible only below sm) -->
+                <ul class="navbar-nav d-sm-none w-100">
+                    <li class="nav-item"><a class="nav-link" href="<?= $link->url('account.settings') ?>">Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?= $link->url('quiz.edit') ?>">Create Quiz</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?= $link->url('quiz.own') ?>">Edit Quiz</a></li>
+                    <li class="nav-item"><hr class="dropdown-divider"></li>
+                    <li class="nav-item"><a class="nav-link text-danger" href="<?= $link->url('auth.logout') ?>">Log out</a></li>
+                </ul>
+
+                <!-- Desktop dropdown (visible at sm and above) -->
+                <ul class="navbar-nav ms-auto d-none d-sm-flex">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <?= htmlspecialchars($user->getName(), ENT_QUOTES, 'UTF-8') ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuDropdown">
+                            <li><a class="dropdown-item" href="<?= $link->url('account.settings') ?>">Settings</a></li>
+                            <li><a class="dropdown-item" href="<?= $link->url('quiz.edit') ?>">Create Quiz</a></li>
+                            <li><a class="dropdown-item" href="<?= $link->url('quiz.own') ?>">Edit Quiz</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="<?= $link->url('auth.logout') ?>">Log out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            <?php } else { ?>
+                <!-- Small-screen vertical login/register (visible only below sm) -->
+                <ul class="navbar-nav d-sm-none w-100">
+                    <li class="nav-item"><a class="nav-link" href="<?= App\Configuration::LOGIN_URL ?>">Log in</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?= $link->url("auth.register") ?>">Register</a></li>
+                </ul>
+
+                <!-- Desktop login/register links (visible at sm and above) -->
+                <ul class="navbar-nav ms-auto d-none d-sm-flex d-flex flex-row gap-2 flex-nowrap align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= App\Configuration::LOGIN_URL ?>">Log in</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= $link->url("auth.register") ?>">Register</a>
+                    </li>
+                </ul>
+            <?php } ?>
+        </div>
     </div>
 </nav>
 
 <!-- Spacer element used to prevent layout shift when navbar becomes sticky -->
-<div id="navSpacer" style="height:0; transition: height 160ms ease;"></div>
+<div id="navSpacer"></div>
 
 <div class="container">
     <div class="web-content">
@@ -73,71 +105,5 @@
     </div>
 </div>
 
-<script>
-    // Observe the small sentinel above the navbar; when it leaves the viewport we toggle
-    // a class on <html> and set --nav-height so CSS can animate the spacer smoothly.
-    (function () {
-        var nav = document.getElementById('mainNavbar');
-        var spacer = document.getElementById('navSpacer');
-        var sentinel = document.getElementById('navSentinel');
-        var docEl = document.documentElement;
-        if (!nav || !spacer || !sentinel || !docEl) return;
-
-        function activate() {
-            var h = nav.offsetHeight + 'px';
-            // set CSS variable and add class, allow CSS to animate spacer
-            docEl.style.setProperty('--nav-height', h);
-            if (!docEl.classList.contains('nav-sticky')) docEl.classList.add('nav-sticky');
-        }
-        function deactivate() {
-            // remove class; spacer will animate to 0
-            if (docEl.classList.contains('nav-sticky')) docEl.classList.remove('nav-sticky');
-            // optionally clear var (keeps last value though)
-            // docEl.style.removeProperty('--nav-height');
-        }
-
-        function updateOnResize() {
-            if (docEl.classList.contains('nav-sticky')) {
-                // refresh variable to the new height
-                docEl.style.setProperty('--nav-height', nav.offsetHeight + 'px');
-            }
-        }
-
-        if ('IntersectionObserver' in window) {
-            var io = new IntersectionObserver(function (entries) {
-                entries.forEach(function (entry) {
-                    // when sentinel is out of view -> navbar has reached top -> activate spacer
-                    if (entry.isIntersecting) {
-                        // sentinel visible -> navbar in normal flow
-                        deactivate();
-                    } else {
-                        // sentinel out of view -> navbar sticky
-                        activate();
-                    }
-                });
-            }, { root: null, threshold: 0 });
-
-            io.observe(sentinel);
-
-            // keep value updated on resize
-            window.addEventListener('resize', updateOnResize);
-
-            // ensure correct initial state on load
-            window.addEventListener('load', function () {
-                if (sentinel.getBoundingClientRect().top < 0) activate(); else deactivate();
-            });
-        } else {
-            // Fallback for old browsers: use scroll and resize
-            function check() {
-                if (sentinel.getBoundingClientRect().top < 0) activate(); else deactivate();
-            }
-            window.addEventListener('scroll', check, {passive: true});
-            window.addEventListener('resize', function () { check(); updateOnResize(); });
-            window.addEventListener('load', check);
-            document.addEventListener('DOMContentLoaded', check);
-            check();
-        }
-    })();
-</script>
 </body>
 </html>

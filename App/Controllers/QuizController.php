@@ -50,8 +50,7 @@ class QuizController extends BaseController
             $quiz->setQuestionCount(0);
             $quiz->save();
 
-            // redirect using the saved quiz id (not the whole object)
-            return $this->redirect($this->url("quiz.edit", ['quiz' => $quiz->getId()]));
+            return $this->redirect($this->url("quiz.edit", ['id' => $quiz->getId()]));
         } else if ($request->hasValue('finish')) {
             return $this->redirect($this->url("quiz.own"));
         }
