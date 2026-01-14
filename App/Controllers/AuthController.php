@@ -22,6 +22,14 @@ use PDO;
  */
 class AuthController extends BaseController
 {
+    public function authorize(Request $request, string $action): bool
+    {
+        if ($action === 'logout' || $action === 'changePassword' || $action === 'deleteAccount') {
+            return $this->user->isLoggedIn();
+        }
+        return true;
+    }
+
     /**
      * Redirects to the login page.
      *
@@ -90,7 +98,7 @@ class AuthController extends BaseController
             if (!preg_match('/\d/', $password)) {
                 return $this->html(['message' => 'Heslo musí obsahovať aspoň jednu číslicu.']);
             }
-            if (count(User::getAll("username = ?", [$username])) !== 0) {
+            if (User::getCount("username = ?", [$username]) !== 0) {
                 return $this->html(['message' => 'Používateľ s týmto menom už existuje.']);
             }
             if ($password !== $password_confirm) {
@@ -116,7 +124,7 @@ class AuthController extends BaseController
         if ($request->hasValue('submit')) {
             $user = $this->user->getIdentity();
             if ($user !== null) {
-                $userModel = User::getOne($user->getName());
+                $userModel = User::getOne($user->getId());
                 if ($userModel === null) {
                     // dufam unreachable
                     throw new \RuntimeException('Nenájdený prihlásený používateľ.');
@@ -142,7 +150,7 @@ class AuthController extends BaseController
         if ($request->hasValue('submit')) {
             $user = $this->user->getIdentity();
             if ($user !== null) {
-                $userModel = User::getAll("username = ?", [$user->getName()])[0] ?? null;
+                $userModel = User::getOne($user->getId());
                 if ($userModel !== null) {
                     if (!password_verify($request->value('password'), $userModel->getPassword())) {
                         return $this->html(['message' => 'Nesprávne heslo']);

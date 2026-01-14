@@ -4,7 +4,6 @@
 /** @var \Framework\Support\LinkGenerator $link */
 /** @var \Framework\Support\View $view */
 
-$view->setLayout('auth');
 ?>
 
 <div class="container">
@@ -29,7 +28,7 @@ $view->setLayout('auth');
                                    placeholder="New Password" required>
                         </div>
                         <div class="text-center">
-                            <button class="btn btn-warning" type="submit" name="submit">Change Password
+                            <button class="btn btn-warning" type="submit" name="submit" disabled>Change Password
                             </button>
                         </div>
                     </form>

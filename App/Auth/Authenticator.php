@@ -2,7 +2,6 @@
 
 namespace App\Auth;
 
-use Framework\Auth\DummyAuthenticator;
 use Framework\Auth\SessionAuthenticator;
 use Framework\Core\IIdentity;
 use App\Models\User;

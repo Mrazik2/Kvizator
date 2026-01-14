@@ -2,14 +2,16 @@
 
 namespace App\Controllers;
 
-use App\Models\Quiz;
-use App\Models\User;
 use Framework\Core\BaseController;
 use Framework\Http\Request;
 use Framework\Http\Responses\Response;
 
 class AccountController extends BaseController
 {
+    public function authorize(Request $request, string $action): bool
+    {
+        return $this->user->isLoggedIn();
+    }
 
     public function index(Request $request): Response
     {

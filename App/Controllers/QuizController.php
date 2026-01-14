@@ -10,6 +10,13 @@ use Framework\Http\Responses\Response;
 
 class QuizController extends BaseController
 {
+    public function authorize(Request $request, string $action): bool
+    {
+        if ($action === 'others') {
+            return true;
+        }
+        return $this->user->isLoggedIn();
+    }
 
     public function index(Request $request): Response
     {

@@ -4,7 +4,6 @@
 /** @var \Framework\Support\LinkGenerator $link */
 /** @var \Framework\Support\View $view */
 
-$view->setLayout('auth');
 ?>
 
 <div class="container">
@@ -34,7 +33,7 @@ $view->setLayout('auth');
                                    placeholder="Password" required>
                         </div>
                         <div class="text-center">
-                            <button class="btn btn-primary" type="submit" name="submit">Register
+                            <button class="btn btn-primary" type="submit" name="submit" disabled>Register
                             </button>
                         </div>
                     </form>
