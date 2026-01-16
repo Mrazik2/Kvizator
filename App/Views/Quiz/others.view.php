@@ -17,7 +17,6 @@ use App\Models\User;
                 <?php
                 $qCount = (int)$quiz->getQuestionCount();
                 if ($qCount === 0) {
-                    // Skip quizzes with zero questions
                     continue;
                 }
                 $id = $quiz->getId();
@@ -27,12 +26,10 @@ use App\Models\User;
                 $username = User::getOne($quiz->getCreatorId())?->getUsername() ?? 'Unknown';
                 $usernameEsc = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
                 $url = $link->url('quiz', ['id' => $id]);
-
-                // Topic and difficulty
-                $topic = method_exists($quiz, 'getTopic') ? $quiz->getTopic() : null;
+                $topic = $quiz->getTopic();
                 $topicEsc = $topic ? htmlspecialchars($topic, ENT_QUOTES, 'UTF-8') : '';
 
-                $difficultyRaw = method_exists($quiz, 'getDifficulty') ? strtolower((string)$quiz->getDifficulty()) : 'unknown';
+                $difficultyRaw = strtolower((string)$quiz->getDifficulty());
                 switch ($difficultyRaw) {
                     case 'easy':
                         $diffClass = 'bg-success text-white';

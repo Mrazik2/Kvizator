@@ -20,14 +20,13 @@ class QuizController extends BaseController
 
     public function index(Request $request): Response
     {
-        return $this->redirect($this->url("creation.edit"));
+        return $this->redirect($this->url("quiz.edit"));
     }
 
     public function edit(Request $request): Response
     {
         $quiz = null;
 
-        // expect 'quiz' param to be an id (sent after save)
         if ($request->hasValue('id')) {
             $quizId = $request->value('id');
             if (is_numeric($quizId)) {

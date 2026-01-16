@@ -9,13 +9,13 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-            <div class="card card-signin my-5">
+            <div class="card card-login my-5">
                 <div class="card-body">
                     <h5 class="card-title text-center">Login</h5>
                     <div class="text-center text-danger mb-3" id="message">
                         <?= @$message ?>
                     </div>
-                    <form class="form-signin" method="post" action="<?= $link->url("login") ?>">
+                    <form class="form-login" method="post" action="<?= $link->url("login") ?>">
                         <div class="form-label-group mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input name="username" type="text" id="username" class="form-control" placeholder="Username"

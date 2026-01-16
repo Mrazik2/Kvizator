@@ -4,11 +4,7 @@
 
 .navbar {
     border-bottom: 1px solid grey;
-    z-index: 1020; /* ensure navbar stays above page content */
-}
-
-.navbar-brand img {
-    width: 50px;
+    z-index: 1020;
 }
 
 /* Sentinel: invisible, keeps document flow minimal (1px tall originally) */

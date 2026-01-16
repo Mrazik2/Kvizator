@@ -15,7 +15,7 @@
                     <div class="text-center text-danger mb-3" id="message">
                         <?= @$message ?>
                     </div>
-                    <form class="form-delete-password" method="post" action="<?= $link->url("deleteAccount") ?>">
+                    <form class="form-delete-account" method="post" action="<?= $link->url("deleteAccount") ?>">
                         <div class="form-label-group mb-3">
                             <label for="password" class="form-label">Confirm Password</label>
                             <input name="password" type="password" id="password" class="form-control"

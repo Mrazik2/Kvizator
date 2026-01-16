@@ -77,6 +77,41 @@ document.addEventListener('DOMContentLoaded', function () {
     username.addEventListener('input', validateAll);
     password.addEventListener('input', validateAll);
     passwordConfirm.addEventListener('input', validateAll);
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            let response = await fetch(form.action,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        username: username.value,
+                        password: password.value,
+                        passwordConfirm: passwordConfirm.value
+                    }),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        "Accept": "application/json"
+                    }
+                });
+
+            const data = await response.json();
+            if (response.ok) {
+                if (data.success) {
+                    window.location = data.redirect || '/';
+                } else {
+                    messageDiv.textContent = data.message;
+                    username.value = '';
+                    password.value = '';
+                    passwordConfirm.value = '';
+                }
+            }
+        } catch (ex) {
+            messageDiv.textContent = 'Chyba pri komunikácii so serverom.';
+            console.error(ex);
+        }
+    });
 });
 
 
@@ -127,15 +162,49 @@ document.addEventListener('DOMContentLoaded', function () {
 
     newPassword.addEventListener('input', validatePassword);
     oldPassword.addEventListener('input', validatePassword);
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            let response = await fetch(form.action,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        oldPassword: oldPassword.value,
+                        newPassword: newPassword.value
+                    }),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        "Accept": "application/json"
+                    }
+                });
+
+            const data = await response.json();
+            if (response.ok) {
+                if (data.success) {
+                    window.location = data.redirect || '/';
+                } else {
+                    messageDiv.textContent = data.message;
+                    oldPassword.value = '';
+                    newPassword.value = '';
+                }
+            }
+        } catch (ex) {
+            messageDiv.textContent = 'Chyba pri komunikácii so serverom.';
+            console.error(ex);
+        }
+    });
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const form = document.querySelector('.form-signin');
+    const form = document.querySelector('.form-login');
     if (!form) return;
 
     const username = form.querySelector('#username');
     const password = form.querySelector('#password');
     const messageDiv = document.querySelector('#message');
+    const submitBtn = form.querySelector('button[type="submit"]');
 
     function emptyMessage() {
         messageDiv.textContent = '';
@@ -143,10 +212,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
     username.addEventListener('input', emptyMessage);
     password.addEventListener('input', emptyMessage);
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            let response = await fetch(form.action,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        username: username.value,
+                        password: password.value
+                    }),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        "Accept": "application/json"
+                    }
+                });
+
+            const data = await response.json();
+            if (response.ok) {
+                if (data.success) {
+                    window.location = data.redirect || '/';
+                } else {
+                    messageDiv.textContent = data.message;
+                    password.value = '';
+                }
+            }
+        } catch (ex) {
+            messageDiv.textContent = 'Chyba pri komunikácii so serverom.';
+            console.error(ex);
+        }
+    });
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const form = document.querySelector('.form-delete-password');
+    const form = document.querySelector('.form-delete-account');
     if (!form) return;
 
     const password = form.querySelector('#password');
@@ -157,4 +258,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     password.addEventListener('input', emptyMessage);
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            let response = await fetch(form.action,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        password: password.value
+                    }),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        "Accept": "application/json"
+                    }
+                });
+
+            const data = await response.json();
+            if (response.ok) {
+                if (data.success) {
+                    window.location = data.redirect || '/';
+                } else {
+                    messageDiv.textContent = data.message;
+                    password.value = '';
+                }
+            }
+        } catch (ex) {
+            messageDiv.textContent = 'Chyba pri komunikácii so serverom.';
+            console.error(ex);
+        }
+    });
 });

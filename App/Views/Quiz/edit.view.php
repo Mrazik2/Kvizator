@@ -4,7 +4,6 @@
 /** @var \Framework\Support\LinkGenerator $link */
 /** @var \Framework\Support\View $view */
 
-$view->setLayout('editQuiz');
 ?>
 
 <div class="container my-4">

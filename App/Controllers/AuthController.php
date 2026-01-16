@@ -56,16 +56,16 @@ class AuthController extends BaseController
      */
     public function login(Request $request): Response
     {
-        $logged = null;
-        if ($request->hasValue('submit')) {
-            $logged = $this->app->getAuthenticator()->login($request->value('username'), $request->value('password'));
+        if ($request->isAjax()) {
+            $data = $request->json();
+            $logged = $this->app->getAuthenticator()->login($data->username, $data->password);
             if ($logged) {
-                return $this->redirect($this->url("home.index"));
+                return $this->json(['success' => true, 'redirect' => $this->url("home.index")]);
             }
+            return $this->json(['success' => false, 'message' => 'Zlé meno alebo heslo']);
         }
 
-        $message = $logged === false ? 'Zlé meno alebo heslo' : null;
-        return $this->html(compact("message"));
+        return $this->html();
     }
 
     /**
@@ -84,36 +84,40 @@ class AuthController extends BaseController
 
     public function register(Request $request): Response
     {
-        if ($request->hasValue('submit')) {
-            $username = $request->value('username');
-            $password = $request->value('password');
-            $password_confirm = $request->value('password_confirm');
+        if ($request->isAjax()) {
+            $data = $request->json();
+            $ok = true;
+            $message = '';
+            if (strlen($data->username) < 3 || strlen($data->username) > 12) {
+                $message = 'Meno používateľa musí mať 3–12 znakov';
+                $ok = false;
+            } else if (strlen($data->password) < 8 || strlen($data->password) > 30) {
+                $message = 'Heslo musí mať aspoň 8 a maximílne 30 znakov';
+                $ok = false;
+            } else if (!preg_match('/\d/', $data->password)) {
+                $message = 'Heslo musí obsahovať aspoň jednu číslicu';
+                $ok = false;
+            } else if (User::getCount("username = ?", [$data->username]) !== 0) {
+                $message = 'Používateľ s týmto menom už existuje';
+                $ok = false;
+            } else if ($data->password !== $data->passwordConfirm) {
+                $message = 'Heslá sa nezhodujú';
+                $ok = false;
+            }
 
-            if (strlen($username) < 3 || strlen($username) > 12) {
-                return $this->html(['message' => 'Meno používateľa musí mať 3–12 znakov.']);
-            }
-            if (strlen($password) < 8 || strlen($password) > 30) {
-                return $this->html(['message' => 'Heslo musí mať aspoň 8 a maximílne 30 znakov.']);
-            }
-            if (!preg_match('/\d/', $password)) {
-                return $this->html(['message' => 'Heslo musí obsahovať aspoň jednu číslicu.']);
-            }
-            if (User::getCount("username = ?", [$username]) !== 0) {
-                return $this->html(['message' => 'Používateľ s týmto menom už existuje.']);
-            }
-            if ($password !== $password_confirm) {
-                return $this->html(['message' => 'Heslá sa nezhodujú.']);
+            if (!$ok) {
+                return $this->json(['success' => false, 'message' => $message]);
             }
 
             $user = new User();
-            $user->setUsername($request->value('username'));
-            $user->setPassword(password_hash($request->value('password'), PASSWORD_DEFAULT));
+            $user->setUsername($data->username);
+            $user->setPassword(password_hash($data->password, PASSWORD_DEFAULT));
             $user->save();
-            $logged = $this->app->getAuthenticator()->login($request->value('username'), $request->value('password'));
+            $logged = $this->app->getAuthenticator()->login($data->username, $data->password);
             if (!$logged) {
-                throw new \RuntimeException('Registration succeeded but automatic login failed.');
+                throw new \RuntimeException('Zly login po registracii');
             }
-            return $this->redirect($this->url("home.index"));
+            return $this->json(['success' => true, 'redirect' => $this->url("home.index")]);
         }
 
         return $this->html();
@@ -121,24 +125,32 @@ class AuthController extends BaseController
 
     public function changePassword(Request $request): Response
     {
-        if ($request->hasValue('submit')) {
+        if ($request->isAjax()) {
             $user = $this->user->getIdentity();
+            $data = $request->json();
             if ($user !== null) {
                 $userModel = User::getOne($user->getId());
                 if ($userModel === null) {
                     // dufam unreachable
-                    throw new \RuntimeException('Nenájdený prihlásený používateľ.');
+                    throw new \RuntimeException('Nenájdený prihlásený používateľ');
                 }
-                if (!password_verify($request->value('old_password'), $userModel->getPassword())) {
-                    return $this->html(['message' => 'Nesprávne staré heslo.']);
-                }
-                if ($request->value('new_password') === $request->value('old_password')) {
-                    return $this->html(['message' => 'Nové heslo musí byť odlišné od starého hesla.']);
+                $ok = true;
+                $message = '';
+                if (!password_verify($data->oldPassword, $userModel->getPassword())) {
+                    $message = 'Nesprávne staré heslo';
+                    $ok = false;
+                } else if ($data->newPassword === $data->oldPassword) {
+                    $message = 'Nové heslo musí byť odlišné od starého hesla';
+                    $ok = false;
                 }
 
-                $userModel->setPassword(password_hash($request->value('new_password'), PASSWORD_DEFAULT));
+                if (!$ok) {
+                    return $this->json(['success' => false, 'message' => $message]);
+                }
+
+                $userModel->setPassword(password_hash($data->newPassword, PASSWORD_DEFAULT));
                 $userModel->save();
-                return $this->redirect($this->url("account.settings"));
+                return $this->json(['success' => true, 'redirect' => $this->url("account.settings")]);
             }
         }
 
@@ -147,19 +159,21 @@ class AuthController extends BaseController
 
     public function deleteAccount(Request $request): Response
     {
-        if ($request->hasValue('submit')) {
+        if ($request->isAjax()) {
             $user = $this->user->getIdentity();
+            $data = $request->json();
             if ($user !== null) {
                 $userModel = User::getOne($user->getId());
                 if ($userModel !== null) {
-                    if (!password_verify($request->value('password'), $userModel->getPassword())) {
-                        return $this->html(['message' => 'Nesprávne heslo']);
+                    if (!password_verify($data->password, $userModel->getPassword())) {
+                        return $this->json(['success' => false, 'message' => 'Nesprávne heslo']);
                     }
                     $userModel->delete();
                     $this->app->getAuthenticator()->logout();
-                    return $this->redirect($this->url("home.index"));
+                    return $this->json(['success' => true, 'redirect' => $this->url("home.index")]);
                 }
             }
+            return $this->json(['success' => false, 'message' => 'Nastala chyba']);
         }
 
         return $this->html();
