@@ -9,11 +9,10 @@ class Question extends Model
     protected ?int $id;
     protected ?int $number;
     protected ?string $question;
-    protected ?string $option1;
-    protected ?string $option2;
-    protected ?string $option3;
-    protected ?string $option4;
-    protected ?int $optionNum;
+    protected ?string $answer1;
+    protected ?string $answer2;
+    protected ?string $answer3;
+    protected ?string $answer4;
     protected ?int $answer;
     protected ?int $quizId;
 
@@ -47,54 +46,44 @@ class Question extends Model
         $this->question = $question;
     }
 
-    public function getOption1(): ?string
+    public function getAnswer1(): ?string
     {
-        return $this->option1;
+        return $this->answer1;
     }
 
-    public function setOption1(?string $option1): void
+    public function setAnswer1(?string $answer1): void
     {
-        $this->option1 = $option1;
+        $this->answer1 = $answer1;
     }
 
-    public function getOption2(): ?string
+    public function getAnswer2(): ?string
     {
-        return $this->option2;
+        return $this->answer2;
     }
 
-    public function setOption2(?string $option2): void
+    public function setAnswer2(?string $answer2): void
     {
-        $this->option2 = $option2;
+        $this->answer2 = $answer2;
     }
 
-    public function getOption3(): ?string
+    public function getAnswer3(): ?string
     {
-        return $this->option3;
+        return $this->answer3;
     }
 
-    public function setOption3(?string $option3): void
+    public function setAnswer3(?string $answer3): void
     {
-        $this->option3 = $option3;
+        $this->answer3 = $answer3;
     }
 
-    public function getOption4(): ?string
+    public function getAnswer4(): ?string
     {
-        return $this->option4;
+        return $this->answer4;
     }
 
-    public function setOption4(?string $option4): void
+    public function setAnswer4(?string $answer4): void
     {
-        $this->option4 = $option4;
-    }
-
-    public function getOptionNum(): ?int
-    {
-        return $this->optionNum;
-    }
-
-    public function setOptionNum(?int $optionNum): void
-    {
-        $this->optionNum = $optionNum;
+        $this->answer4 = $answer4;
     }
 
     public function getAnswer(): ?int

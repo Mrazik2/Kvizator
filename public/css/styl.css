@@ -20,6 +20,6 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-#goto_number {
+#goto-number {
     width: 3.5rem;
 }

@@ -1,7 +1,8 @@
 <?php
 /** @var \App\Models\Quiz[] $quizzes */
 /** @var \Framework\Support\LinkGenerator $link */
-/** @var String $filter */
+/** @var string $filter */
+/** @var string $message */
 ?>
 
 <div class="container my-4">
@@ -19,6 +20,11 @@
                 <a href="<?= $urlPublished ?>" class="btn <?= $currentFilter === 'published' ? 'btn-primary' : 'btn-outline-secondary' ?>">Published</a>
             </div>
         </div>
+        <?php if ($message && $message !== ''): ?>
+            <div class="text-center text-danger mb-3" id="message">
+                <?= $message ?>
+            </div>
+        <?php endif; ?>
 
         <?php if (empty($quizzes)): ?>
             <div class="col-12">

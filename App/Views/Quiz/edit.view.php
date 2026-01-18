@@ -65,7 +65,9 @@
                             <!-- Right column: Edit Questions above Cancel on xs, inline on sm+ and aligned to the right -->
                             <div class="col-6 d-flex flex-column flex-sm-row align-items-end align-items-sm-center justify-content-end gap-2">
                                 <!-- Edit questions: show as link; enabled only when quiz has an id -->
-                                <a href="<?= $link->url('quiz.question', ['id' => $quiz->getId()]) ?>" class="btn btn-outline-secondary" id="upravOtazky">Otázky</a>
+                                <?php if (!$quiz || $quiz->getPublished() === 0): ?>
+                                    <a href="<?= $link->url('quiz.question', ['id' => $quiz?->getId()]) ?>" class="btn btn-outline-secondary" id="upravOtazky">Otázky</a>
+                                <?php endif; ?>
 
                                 <!-- Cancel: go back to home (adjust route if you prefer) -->
                                 <a href="<?= $link->url('quiz.own') ?>" class="btn btn-link ms-sm-2" onclick="return confirm('Naozaj chcete zrušiť? Neuložené zmeny sa stratia.');">Zrušiť</a>

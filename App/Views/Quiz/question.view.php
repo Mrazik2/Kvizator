@@ -4,23 +4,24 @@
 /** @var int $questionCount */
 /** @var \App\Models\Question|null $question */
 
-$options = [];
-$options[0] = $question?->getOption1();
-$options[1] = $question?->getOption2();
-$options[2] = $question?->getOption3();
-$options[3] = $question?->getOption4();
+$answers = [];
+$answers[0] = $question?->getAnswer1();
+$answers[1] = $question?->getAnswer2();
+$answers[2] = $question?->getAnswer3();
+$answers[3] = $question?->getAnswer4();
 ?>
 
 <div class="container my-4">
     <div class="row justify-content-center">
         <div class="col-12 col-md-8">
 
-            <form action="<?= $link->url('quiz.question')?>" method="post" class="question-form">
+            <form action="<?= $link->url('quiz.edit', ['id' => $quizId])?>" method="post" class="question-form">
 
-                <input type="hidden" name="quizId" value="<?= $quizId ?>">
+                <input type="hidden" name="quizId" id="quizId" value="<?= $quizId ?>">
+                <input type="hidden" name="questionCount" id="questionCount" value="<?= $questionCount ?>">
 
                 <div class="mb-3">
-                    <label for="question_text" class="form-label">Question 1/<?= $questionCount ?></label>
+                    <label for="question_text" class="form-label" id="question-label">Question 1/<?= $questionCount ?></label>
                     <textarea id="question_text" name="text" class="form-control" rows="3" required><?= $question ? $question->getQuestion() : '' ?></textarea>
                 </div>
 
@@ -35,7 +36,7 @@ $options[3] = $question?->getOption4();
                                 <input id="<?= $rid ?>"  class="form-check-input mt-0" type="radio" name="correct" value="<?= $i ?>" aria-label="Correct answer <?= $i + 1 ?>" <?= $i === ($question ? $question->getAnswer() - 1 : 0) ? 'checked' : '' ?>>
                             </div>
                             <label for="<?= $aid ?>" class="visually-hidden">Answer <?= $i + 1 ?></label>
-                            <input id="<?= $aid ?>" type="text" name="answers[]" class="form-control" placeholder="Answer <?= $i + 1 ?>" value="<?= $question ? $options[$i] : '' ?>"  required>
+                            <input id="<?= $aid ?>" type="text" name="answers[]" class="form-control" placeholder="Answer <?= $i + 1 ?>" value="<?= $question ? $answers[$i] : '' ?>">
                         </div>
                     <?php endfor; ?>
 
@@ -47,8 +48,8 @@ $options[3] = $question?->getOption4();
                     </div>
 
                     <div class="d-flex align-items-center gap-2 justify-content-center">
-                        <label for="goto_number" class="visually-hidden">Go to question</label>
-                        <input id="goto_number" type="number" class="form-control" placeholder="No.">
+                        <label for="goto-number" class="visually-hidden">Go to question</label>
+                        <input id="goto-number" type="number" class="form-control" placeholder="No.">
                         <button type="button" class="btn btn-outline-primary" id="goto-question">Go</button>
                     </div>
 
