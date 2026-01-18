@@ -11,6 +11,7 @@ class Quiz extends Model
     protected ?string $description;
     protected ?string $topic;
     protected ?string $difficulty;
+    protected ?int $published;
 
     protected ?int $creatorId;
     protected ?string $questionCount;
@@ -83,6 +84,16 @@ class Quiz extends Model
     public function setQuestionCount(?string $questionCount): void
     {
         $this->questionCount = $questionCount;
+    }
+
+    public function getPublished(): ?int
+    {
+        return $this->published;
+    }
+
+    public function setPublished(?int $published): void
+    {
+        $this->published = $published;
     }
 
 

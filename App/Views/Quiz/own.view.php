@@ -1,15 +1,28 @@
 <?php
 /** @var \App\Models\Quiz[] $quizzes */
 /** @var \Framework\Support\LinkGenerator $link */
-
-use App\Models\User;
+/** @var String $filter */
 ?>
 
 <div class="container my-4">
     <div class="row g-3">
+
+        <!-- Filter controls: Published / Unpublished -->
+        <div class="col-12">
+            <?php
+            $currentFilter = $filter ?? 'unpublished';
+            $urlUnpublished = $link->url('quiz.own', ['filter' => 'unpublished']);
+            $urlPublished = $link->url('quiz.own', ['filter' => 'published']);
+            ?>
+            <div class="btn-group mb-3" role="group" aria-label="Quiz filter">
+                <a href="<?= $urlUnpublished ?>" class="btn <?= $currentFilter !== 'published' ? 'btn-primary' : 'btn-outline-secondary' ?>">Unpublished</a>
+                <a href="<?= $urlPublished ?>" class="btn <?= $currentFilter === 'published' ? 'btn-primary' : 'btn-outline-secondary' ?>">Published</a>
+            </div>
+        </div>
+
         <?php if (empty($quizzes)): ?>
             <div class="col-12">
-                <div class="alert alert-info mb-0">No quizzes found.</div>
+                <div class="alert alert-info mb-0">No quizzes found for the selected filter.</div>
             </div>
         <?php else: ?>
             <?php foreach ($quizzes as $quiz): ?>
@@ -46,7 +59,9 @@ use App\Models\User;
                 }
 
                 $editUrl = $link->url('quiz.edit', ['id' => $id]);
-                $deleteUrl = $link->url('quiz.delete', ['id' => $id]);
+                $deleteUrl = $link->url('quiz.delete', ['id' => $id, 'filter' => $currentFilter]);
+                $publishUrl = $link->url('quiz.publish', ['id' => $id, 'filter' => $currentFilter]);
+                $viewStatsUrl = $link->url('quiz.stats', ['id' => $id, 'filter' => $currentFilter]);
                 ?>
                 <div class="col-12 col-md-4">
                     <div class="card h-100 d-flex flex-column">
@@ -91,6 +106,16 @@ use App\Models\User;
                                         <button type="submit" class="btn btn-danger w-100">Delete Quiz</button>
                                     </form>
                                 </div>
+                                <?php if ($qCount > 0 && $quiz->getPublished() === 0): ?>
+                                <div class="col-12">
+                                    <a href="<?= $publishUrl ?>" class="btn btn-success w-100">Publish Quiz</a>
+                                </div>
+                                <?php endif; ?>
+                                <?php if ($quiz->getPublished() === 1): ?>
+                                    <div class="col-12">
+                                        <a href="<?= $viewStatsUrl ?>" class="btn btn-success w-100">View Quiz Stats</a>
+                                    </div>
+                                <?php endif; ?>
                             </div>
 
                         </div>
@@ -101,3 +126,4 @@ use App\Models\User;
         <?php endif; ?>
     </div>
 </div>
+

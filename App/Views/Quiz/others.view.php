@@ -1,7 +1,9 @@
 <?php
 /** @var \App\Models\Quiz[] $quizzes */
 /** @var \Framework\Support\LinkGenerator $link */
+/** @var \Framework\Support\View $view */
 
+//$view->setLayout('auth');
 use App\Models\User;
 
 ?>
@@ -16,7 +18,7 @@ use App\Models\User;
             <?php foreach ($quizzes as $quiz): ?>
                 <?php
                 $qCount = (int)$quiz->getQuestionCount();
-                if ($qCount === 0) {
+                if ($quiz->getPublished() === 0) {
                     continue;
                 }
                 $id = $quiz->getId();

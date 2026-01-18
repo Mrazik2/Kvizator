@@ -6,7 +6,9 @@ use App\Models\Quiz;
 use App\Models\User;
 use Framework\Core\BaseController;
 use Framework\Http\Request;
+use Framework\Http\Responses\EmptyResponse;
 use Framework\Http\Responses\Response;
+use App\Models\Question;
 
 class QuizController extends BaseController
 {
@@ -30,35 +32,37 @@ class QuizController extends BaseController
         if ($request->hasValue('id')) {
             $quizId = $request->value('id');
             if (is_numeric($quizId)) {
-                $found = Quiz::getAll("id = ?", [(int)$quizId]);
-                if (!empty($found)) {
-                    $quiz = $found[0];
+                $found = Quiz::getOne($quizId);
+                if ($found !== null) {
+                    $quiz = $found;
                 }
             }
         }
-
         return $this->html(compact('quiz'));
     }
 
     public function save(Request $request): Response
     {
-        if ($request->hasValue('save')) {
-            $title = $request->value('title');
-            $topic = $request->value('topic');
-            $difficulty = $request->value('difficulty');
-            $description = $request->hasValue('description') ? $request->value('description') : '';
-            $quiz = $request->hasValue('id') ? Quiz::getOne($request->value('id')) : new Quiz();
+        if ($request->isAjax()) {
+            $data = $request->json();
+            $title = $data->title;
+            $topic = $data->topic;
+            $difficulty = $data->difficulty;
+            $description = $data->description;
+            $quizId = $data->quizId;
+            $quiz = $quizId !== "-1" ? Quiz::getOne((int)$quizId) : new Quiz();
             $quiz->setTitle($title);
             $quiz->setTopic($topic);
             $quiz->setDifficulty($difficulty);
             $quiz->setDescription($description);
-            $quiz->setCreatorId(User::getAll("username = ?", [$this->user->getName()])[0]->getId());
-            $quiz->setQuestionCount(0);
+            if ($quizId === "-1") {
+                $quiz->setPublished(0);
+                $quiz->setCreatorId($this->user->getIdentity()->getId());
+                $quiz->setQuestionCount(0);
+            }
             $quiz->save();
 
-            return $this->redirect($this->url("quiz.edit", ['id' => $quiz->getId()]));
-        } else if ($request->hasValue('finish')) {
-            return $this->redirect($this->url("quiz.own"));
+            return $this->json(['quizId' => $quiz->getId()]);
         }
         return $this->redirect($this->url("quiz.edit"));
     }
@@ -67,18 +71,46 @@ class QuizController extends BaseController
         if ($request->hasValue('id')) {
             $id = $request->value('id');
             if (is_numeric($id)) {
-                $quiz = Quiz::getOne((int)$id);
-                if (!empty($quiz)) {
+                $quiz = Quiz::getOne($id);
+                if ($quiz !== null) {
                     $quiz->delete();
                 }
             }
         }
-        return $this->redirect($this->url("quiz.own"));
+        $filter = $request->hasValue('filter') ? $request->value('filter') : 'unpublished';
+        return $this->redirect($this->url("quiz.own", ['filter' => $filter]));
+    }
+
+    public function publish(Request $request): Response {
+        if ($request->hasValue('id')) {
+            $id = $request->value('id');
+            if (is_numeric($id)) {
+                $quiz = Quiz::getOne($id);
+                if ($quiz !== null && $quiz->getQuestionCount() > 0) {
+                    $quiz->setPublished(1);
+                    $quiz->save();
+                }
+            }
+        }
+        $filter = $request->hasValue('filter') ? $request->value('filter') : 'unpublished';
+        return $this->redirect($this->url("quiz.own", ['filter' => $filter]));
+    }
+
+    public function question(Request $request): Response {
+        if ($request->isAjax()) {
+            $data = $request->json();
+        }
+
+        $quizId = $request->hasValue('id') ? $request->value('id') : null;
+        $questionCount = Quiz::getOne($quizId)->getQuestionCount();
+        $questionCount = $questionCount > 0 ? $questionCount : 1;
+        $question = Question::getAll("quizId = ? AND number = ?", [$quizId, 1])[0] ?? null;
+        return $this->html(compact('quizId', 'question', 'questionCount'));
     }
 
     public function others(Request $request): Response {
         if ($this->user->isLoggedIn()) {
-            $quizzes = Quiz::getAll("creatorId <> ?", [User::getAll("username = ?", [$this->user->getName()])[0]->getId()]);
+            $quizzes = Quiz::getAll("creatorId <> ?", [$this->user->getIdentity()->getId()]);
         } else {
             $quizzes = Quiz::getAll();
         }
@@ -86,7 +118,17 @@ class QuizController extends BaseController
     }
 
     public function own(Request $request): Response {
-        $quizzes = Quiz::getAll("creatorId = ?", [User::getAll("username = ?", [$this->user->getName()])[0]->getId()]);
-        return $this->html(compact('quizzes'));
+        $filter = $request->hasValue('filter') ? $request->value('filter') : 'unpublished';
+        $userId = $this->user->getIdentity()->getId();
+
+        if ($filter === 'published') {
+            // only published quizzes
+            $quizzes = Quiz::getAll("creatorId = ? AND published = ?", [$userId, 1]);
+        } else {
+            // default: only unpublished (published = 0 or NULL)
+            $quizzes = Quiz::getAll("creatorId = ? AND published = ?", [$userId, 0]);
+        }
+
+        return $this->html(compact('quizzes', 'filter'));
     }
 }

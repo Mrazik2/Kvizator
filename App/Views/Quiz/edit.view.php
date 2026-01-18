@@ -3,7 +3,6 @@
 /** @var \App\Models\Quiz|null $quiz */
 /** @var \Framework\Support\LinkGenerator $link */
 /** @var \Framework\Support\View $view */
-
 ?>
 
 <div class="container my-4">
@@ -12,11 +11,9 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-3" id="formType"><?= $quiz ? 'Editovať kvíz' : 'Vytvoriť kvíz' ?></h4>
-                    <form class="form-edit" method="post" action="<?= $link->url('quiz.save') ?>">
+                    <form class="quiz-edit" method="post" action="<?= $link->url('quiz.save') ?>">
 
-                        <?php if ($quiz && $quiz->getId()): ?>
-                            <input type="hidden" name="id" value="<?= (int)$quiz->getId() ?>">
-                        <?php endif; ?>
+                        <input type="hidden" name="id" value="<?= $quiz !== null ? $quiz->getId() : -1 ?>" id="quizId">
 
                         <div class="mb-3">
                             <label for="title" class="form-label">Názov</label>
@@ -62,13 +59,13 @@
                                 <button type="submit" name="save" value="save" class="btn btn-primary">Uložiť</button>
 
                                 <!-- Finish: only enabled after quiz is saved (has id) -->
-                                <button type="submit" name="finish" value="finish" class="btn btn-success ms-sm-2">Dokončiť</button>
+                                <a href="<?= $link->url('quiz.own') ?>" class="btn btn-success ms-sm-2" id="finish">Dokončiť</a>
                             </div>
 
                             <!-- Right column: Edit Questions above Cancel on xs, inline on sm+ and aligned to the right -->
                             <div class="col-6 d-flex flex-column flex-sm-row align-items-end align-items-sm-center justify-content-end gap-2">
                                 <!-- Edit questions: show as link; enabled only when quiz has an id -->
-                                <a href="<?= $link->url('nic.nic', ['id' => $quiz?->getId()]) ?>" class="btn btn-outline-secondary" id="upravOtazky">Otázky</a>
+                                <a href="<?= $link->url('quiz.question', ['id' => $quiz->getId()]) ?>" class="btn btn-outline-secondary" id="upravOtazky">Otázky</a>
 
                                 <!-- Cancel: go back to home (adjust route if you prefer) -->
                                 <a href="<?= $link->url('quiz.own') ?>" class="btn btn-link ms-sm-2" onclick="return confirm('Naozaj chcete zrušiť? Neuložené zmeny sa stratia.');">Zrušiť</a>

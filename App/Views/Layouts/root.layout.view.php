@@ -24,11 +24,9 @@
     <script src="<?= $link->asset('js/authChecks.js') ?>"></script>
     <script src="<?= $link->asset('js/script.js') ?>"></script>
     <script src="<?= $link->asset('js/quizChecks.js') ?>"></script>
+    <script src="<?= $link->asset('js/question.js') ?>"></script>
 </head>
 <body>
-
-<!-- small sentinel before navbar observed by IntersectionObserver; 1px tall and does not affect layout -->
-<div id="navSentinel"></div>
 
 <!-- keep nav sticky but make background/shadow part of outer nav so it covers full width and is opaque -->
 <nav class="navbar navbar-expand-sm sticky-top bg-light shadow-sm" id="mainNavbar">
@@ -97,9 +95,6 @@
         </div>
     </div>
 </nav>
-
-<!-- Spacer element used to prevent layout shift when navbar becomes sticky -->
-<div id="navSpacer"></div>
 
 <div class="container">
     <div class="web-content">

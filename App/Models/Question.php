@@ -8,8 +8,13 @@ class Question extends Model
 {
     protected ?int $id;
     protected ?int $number;
-    protected ?string $text;
-    protected ?string $answer;
+    protected ?string $question;
+    protected ?string $option1;
+    protected ?string $option2;
+    protected ?string $option3;
+    protected ?string $option4;
+    protected ?int $optionNum;
+    protected ?int $answer;
     protected ?int $quizId;
 
     public function getId(): ?int
@@ -32,22 +37,72 @@ class Question extends Model
         $this->number = $number;
     }
 
-    public function getText(): ?string
+    public function getQuestion(): ?string
     {
-        return $this->text;
+        return $this->question;
     }
 
-    public function setText(?string $text): void
+    public function setQuestion(?string $question): void
     {
-        $this->text = $text;
+        $this->question = $question;
     }
 
-    public function getAnswer(): ?string
+    public function getOption1(): ?string
+    {
+        return $this->option1;
+    }
+
+    public function setOption1(?string $option1): void
+    {
+        $this->option1 = $option1;
+    }
+
+    public function getOption2(): ?string
+    {
+        return $this->option2;
+    }
+
+    public function setOption2(?string $option2): void
+    {
+        $this->option2 = $option2;
+    }
+
+    public function getOption3(): ?string
+    {
+        return $this->option3;
+    }
+
+    public function setOption3(?string $option3): void
+    {
+        $this->option3 = $option3;
+    }
+
+    public function getOption4(): ?string
+    {
+        return $this->option4;
+    }
+
+    public function setOption4(?string $option4): void
+    {
+        $this->option4 = $option4;
+    }
+
+    public function getOptionNum(): ?int
+    {
+        return $this->optionNum;
+    }
+
+    public function setOptionNum(?int $optionNum): void
+    {
+        $this->optionNum = $optionNum;
+    }
+
+    public function getAnswer(): ?int
     {
         return $this->answer;
     }
 
-    public function setAnswer(?string $answer): void
+    public function setAnswer(?int $answer): void
     {
         $this->answer = $answer;
     }

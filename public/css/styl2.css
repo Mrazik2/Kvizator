@@ -1,0 +1,163 @@
+:root {
+    --nav-height: 0px;
+}
+
+.navbar {
+    border-bottom: 1px solid grey;
+    z-index: 1020;
+}
+
+/* Sentinel: invisible, keeps document flow minimal (1px tall originally) */
+#navSentinel {
+    height: 1px;
+    width: 100%;
+}
+
+/* Spacer and sticky helpers */
+#navSpacer {
+    height: 0;
+    transition: height 180ms ease;
+}
+
+/* When .nav-sticky is present on <html>, the spacer will expand to the navbar height stored in --nav-height */
+html.nav-sticky #navSpacer {
+    height: var(--nav-height, 0px);
+}
+
+/* Normalize bitmap logo images */
+.navbar-brand img,
+.logo-square img {
+    display: block;          /* remove baseline differences */
+    width: 50px;             /* explicit width (adjust if needed) */
+    height: auto;            /* preserve aspect ratio */
+    line-height: 0;          /* avoid extra whitespace */
+    vertical-align: middle;
+    object-fit: contain;
+    image-rendering: optimizeQuality;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    backface-visibility: hidden;
+    transform: translateZ(0); /* force compositor, reduce subpixel differences */
+}
+
+/* Normalize inline SVGs used as logos */
+.logo-square svg,
+.navbar-brand svg {
+    display: block;
+    width: 18px !important;   /* force exact pixel size */
+    height: 18px !important;
+    fill: currentColor;       /* consistent color source */
+    stroke: none;             /* if stroke exists, make consistent */
+    shape-rendering: geometricPrecision;
+    vector-effect: non-scaling-stroke; /* consistent stroke on zoom */
+    image-rendering: optimizeQuality;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+/* Prevent SVG/IMG from shifting with surrounding text */
+.logo-square,
+.navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
+
+/* Keep brand text vertically aligned */
+.brand-text {
+    line-height: 1;
+    vertical-align: middle;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.brand-text {
+    color: inherit; /* keep color from navbar */
+}
+
+/* ensure dropdown stays above content */
+.dropdown-menu {
+    z-index: 1100;
+}
+
+/* Prevent the navbar from expanding when dropdowns open on small screens
+   - make the dropdown menu an absolute overlay anchored to its parent dropdown */
+.navbar .nav-item.dropdown {
+    position: relative; /* anchor for absolute menu */
+}
+
+.navbar .dropdown-menu {
+    position: absolute !important;
+    top: 100%;
+    right: 0;
+    left: auto;
+    min-width: 10rem;
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+}
+
+/* Slight responsive tweak: keep menu full width on very small screens if desired */
+@media (max-width: 420px) {
+    .navbar .dropdown-menu {
+        right: 0;
+        left: 0;
+        min-width: 0;
+    }
+}
+
+/* Prevent navbar content transparency issues: force navbar background opaque when scrolled */
+html.nav-sticky .navbar {
+    background-color: #ffffff; /* or inherit the existing bg-light */
+}
+
+/* Small tweak: keep login/register links on one line on narrow viewports */
+@media (max-width: 380px) {
+    .navbar-nav.d-flex { flex-wrap: nowrap; }
+}
+
+/* Mobile-friendly dropdown: make it an overlay under the navbar so it never pushes content */
+@media (max-width: 575.98px) {
+    .navbar .dropdown-menu {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        /* place directly under the navbar; uses --nav-height when available, fallback to 56px */
+        top: calc(var(--nav-height, 56px));
+        border-radius: 0 !important;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+        background-color: #fff !important;
+        min-width: 0 !important;
+        padding: .5rem 0 !important;
+        max-height: calc(100vh - calc(var(--nav-height, 56px)) - 1rem);
+        overflow-y: auto;
+    }
+
+    /* Make dropdown items larger and easier to tap */
+    .navbar .dropdown-menu .dropdown-item {
+        padding: .75rem 1rem;
+        font-size: 1rem;
+    }
+
+    /* Ensure the dropdown toggler stays visible and doesn't wrap */
+    .navbar .nav-link.dropdown-toggle {
+        white-space: nowrap;
+    }
+}
+
+/* Constrain quiz edit form card so it doesn't expand too wide on narrow viewports */
+@media (max-width: 990px) {
+    .form-card {
+        max-width: 720px; /* arbitrary cap to keep form comfortable */
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+}
+
+/* Additional safeguard: ensure .container uses padding to avoid content touching edges */
+.container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
