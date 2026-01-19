@@ -60,8 +60,8 @@ $answers[3] = $question?->getAnswer4();
 
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-primary" id="new-question">New Question</button>
-                    <button type="button" class="btn btn-secondary" id="go-back">Back to quiz</button>
                     <button type="button" class="btn btn-danger" id="delete-question">Delete Question</button>
+                    <button type="button" class="btn btn-secondary" id="go-back">Back to quiz</button>
                 </div>
 
             </form>

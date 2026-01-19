@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const answerTexts = [answers[0].value, answers[1].value, answers[2].value, answers[3].value];
             const indexChecked = radios.findIndex(radio => radio.checked);
-            await fetch("http://localhost/?c=Quiz&a=saveQuestion",
+            await fetch("http://localhost/?c=Question&a=save",
                 {
                     method: "POST",
                     body: JSON.stringify({
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function loadQuestion() {
         try {
-            let response = await fetch("http://localhost/?c=Quiz&a=question",
+            let response = await fetch("http://localhost/?c=Question&a=edit",
                 {
                     method: "POST",
                     body: JSON.stringify({
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function deleteQuestion() {
         try {
-            let response = await fetch("http://localhost/?c=Quiz&a=deleteQuestion",
+            let response = await fetch("http://localhost/?c=Question&a=delete",
                 {
                     method: "DELETE",
                     body: JSON.stringify({
