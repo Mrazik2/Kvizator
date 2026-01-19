@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const gotoButton = form.querySelector('#goto-question');
     const newQuestionButton = form.querySelector('#new-question');
     const goBackButton = form.querySelector('#go-back');
+    const deleteButton = form.querySelector('#delete-question');
 
 
     const questionText = form.querySelector('#question_text');
@@ -91,6 +92,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    async function deleteQuestion() {
+        try {
+            let response = await fetch("http://localhost/?c=Quiz&a=deleteQuestion",
+                {
+                    method: "DELETE",
+                    body: JSON.stringify({
+                        quizId: quizId,
+                        number: questionNum
+                    }),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        "Accept": "application/json"
+                    }
+                });
+            return true;
+        } catch (ex) {
+            console.error(ex);
+            return false;
+        }
+    }
+
     function changeLabel() {
         questionLabel.textContent = `Question ${questionNum}/${questionCount}`;
     }
@@ -146,6 +169,22 @@ document.addEventListener('DOMContentLoaded', function () {
         if (await saveQuestion()) {
            window.location.href = form.action;
        }
+    });
+
+    deleteButton.addEventListener('click', async (e) => {
+        if (questionCount === 1) {
+            alert("Cannot delete the only question in the quiz.");
+            return;
+        }
+        if (await deleteQuestion()) {
+            questionCount--;
+            if (questionNum > questionCount) {
+                questionNum = questionCount;
+            }
+            await loadQuestion();
+            checkButtons();
+            changeLabel();
+        }
     });
 
     window.addEventListener('beforeunload', (e) => {

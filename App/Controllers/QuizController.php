@@ -191,6 +191,34 @@ class QuizController extends BaseController
         throw new \Exception("Chyba pri ukladani otazky.");
     }
 
+    public function deleteQuestion(Request $request): Response {
+        if ($request->isAjax()) {
+            $data = $request->json();
+            $quizId = $data->quizId;
+            $number = $data->number;
+
+            $question = Question::getAll("quizId = ? AND number = ?", [$quizId, $number])[0] ?? null;
+            if ($question !== null) {
+                $question->delete();
+
+                $subsequentQuestions = Question::getAll("quizId = ? AND number > ?", [$quizId, $number]);
+                foreach ($subsequentQuestions as $subQuestion) {
+                    $subQuestion->setNumber($subQuestion->getNumber() - 1);
+                    $subQuestion->save();
+                }
+
+                $quiz = Quiz::getOne($quizId);
+                if ($quiz !== null) {
+                    $quiz->setQuestionCount($quiz->getQuestionCount() - 1);
+                    $quiz->save();
+                }
+            }
+
+            return new EmptyResponse();
+        }
+        throw new \Exception("Chyba pri mazani otazky.");
+    }
+
     public function others(Request $request): Response {
         if ($this->user->isLoggedIn()) {
             $quizzes = Quiz::getAll("creatorId <> ?", [$this->user->getIdentity()->getId()]);

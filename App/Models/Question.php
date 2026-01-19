@@ -105,5 +105,4 @@ class Question extends Model
     {
         $this->quizId = $quizId;
     }
-
 }
