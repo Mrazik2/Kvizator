@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\Quiz;
 use Framework\Core\BaseController;
 use Framework\Http\Request;
+use Framework\Http\Responses\EmptyResponse;
 use Framework\Http\Responses\Response;
 
 class AttemptController extends BaseController
@@ -22,6 +23,22 @@ class AttemptController extends BaseController
     {
         if ($request->isAjax()) {
             $data = $request->json();
+            $question = Question::getAll("quizId = ? AND number = ?", [Attempt::getOne($data->attemptId)->getQuizId(), $data->number])[0] ?? null;
+            if ($question !== null) {
+                return $this->json([
+                    'questionText' => $question->getQuestion(),
+                    'answers' => [
+                        $question->getAnswer1(),
+                        $question->getAnswer2(),
+                        $question->getAnswer3(),
+                        $question->getAnswer4()
+                    ],
+                    'chosen' => Answer::getAll("attemptId = ? AND number = ?", [$data->attemptId, $data->number])[0]->getChosen()
+                ]);
+            } else {
+                throw new \Exception("Otazka nenajdena.");
+            }
+
         }
 
         $quizId = $request->hasValue('id') ? $request->value('id') : null;
@@ -57,16 +74,31 @@ class AttemptController extends BaseController
     {
         if ($request->isAjax()) {
             $data = $request->json();
+            $attempt = Attempt::getOne($data->attemptId);
+            if ($attempt !== null) {
+                $attempt->delete();
+                return new EmptyResponse();
+            } else {
+                throw new \Exception("Pokus nenajdeny.");
+            }
         }
-        throw new \Exception("Chyba pri ukladani otazky.");
+        throw new \Exception("Request nie je ajax.");
     }
 
     public function save(Request $request): Response
     {
         if ($request->isAjax()) {
             $data = $request->json();
+            $answer = Answer::getAll("attemptId = ? AND number = ?", [$data->attemptId, $data->number])[0] ?? null;
+            if ($answer !== null) {
+                $answer->setChosen($data->chosen);
+                $answer->save();
+                return new EmptyResponse();
+            } else {
+                throw new \Exception("Odpoved nenajdena.");
+            }
         }
-        throw new \Exception("Chyba pri ukladani otazky.");
+        throw new \Exception("Request nie je ajax.");
     }
 
     public function results(Request $request): Response

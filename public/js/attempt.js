@@ -52,13 +52,14 @@ document.addEventListener('DOMContentLoaded', function () {
             for (let i = 0; i < answerRadios.length; i++) {
                 if (answerRadios[i].checked) {
                     chosen = i + 1;
+                    break;
                 }
             }
             await fetch("http://localhost/?c=attempt&a=save",
                 {
                     method: "PUT",
                     body: JSON.stringify({
-                        quizId: attemptId,
+                        attemptId: attemptId,
                         number: questionNum,
                         chosen: chosen
                     }),
@@ -81,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 {
                     method: "POST",
                     body: JSON.stringify({
-                        quizId: attemptId,
+                        attemptId: attemptId,
                         number: questionNum
                     }),
                     headers: {
@@ -92,11 +93,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             const data = await response.json();
             if (response.ok) {
-                questionText.value = data.questionText;
+                questionText.innerHTML = data.questionText;
                 for (let i = 0; i < answerDivs.length; i++) {
-                    answerTexts[i].value = data.answerTexts[i];
+                    answerTexts[i].innerHTML = data.answers[i];
                     answerRadios[i].checked = (data.chosen - 1) === i;
-                    answerDivs[i].hidden = data.answerTexts[i] === '';
+                    answerDivs[i].hidden = data.answers[i] === '';
                 }
                 gotoInput.value = '';
             }
@@ -111,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 {
                     method: "DELETE",
                     body: JSON.stringify({
-                        quizId: attemptId
+                        attemptId: attemptId
                     }),
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -126,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    prevButton.addEventListener('input', async () => {
+    prevButton.addEventListener('click', async () => {
         if (questionNum <= 1) return;
         if (await saveAnswer()) {
             questionNum--;
@@ -136,17 +137,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    nextButton.addEventListener('input', async () => {
+    nextButton.addEventListener('click', async () => {
         if (questionNum >= questionCount) return;
         if (await saveAnswer()) {
             questionNum++;
             await loadQuestion();
             checkButtons();
             changeLabel();
+        } else {
+            console.error("Nevyslo");
         }
     });
 
-    gotoButton.addEventListener('input', async () => {
+    gotoButton.addEventListener('click', async () => {
         const gotoVal = Number(gotoInput.value);
         if (gotoVal < 1 || gotoVal > questionCount) return;
         if (await saveAnswer()) {
@@ -157,13 +160,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    submitButton.addEventListener('input', async () => {
+    submitButton.addEventListener('click', async () => {
         if (await saveAnswer()) {
             window.location.href = `http://localhost/?c=attempt&a=results&attemptId=${attemptId}`;
         }
     });
 
-    abandonButton.addEventListener('input', async () => {
+    abandonButton.addEventListener('click', async () => {
         window.location.href = "http://localhost/?c=home&a=index";
     });
 
