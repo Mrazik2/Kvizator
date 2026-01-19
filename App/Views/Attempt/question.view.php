@@ -1,5 +1,5 @@
 <?php
-/** @var int $quizId */
+/** @var int $attemptId */
 /** @var int $questionCount */
 /** @var \App\Models\Question $question */
 
@@ -25,9 +25,8 @@ foreach ($answers as $k => $a) {
         <div class="col-12 col-md-8">
 
             <form action="#" method="post" class="attempt-question-form">
-                <input type="hidden" name="quizId" id="quizId" value="<?= $quizId ?>">
+                <input type="hidden" name="attemptId" id="attemptId" value="<?= $attemptId ?>">
                 <input type="hidden" name="questionCount" id="questionCount" value="<?= $questionCount ?>">
-                <input type="hidden" name="questionId" id="questionId" value="<?= $question->getId() ?>">
 
                 <div class="mb-3">
                     <label for="question_text" class="form-label" id="question-label">Question <?=  $question->getNumber() ?>/<?= $questionCount ?></label>
@@ -38,7 +37,7 @@ foreach ($answers as $k => $a) {
 
                     <?php for ($i = 0; $i < 4; $i++): ?>
                         <?php $rid = 'answer_radio_' . $i + 1; ?>
-                        <div class="form-check mb-2" <?= $answers[$i] === '' ? 'hidden' : '' ?> id="answer_option_<?= $i + 1 ?>">
+                        <div class="form-check mb-2" <?= $answers[$i] === '' ? 'hidden' : '' ?> id="answer_div_<?= $i + 1 ?>">
                             <input class="form-check-input" type="radio" name="answer" id="<?= $rid ?>">
                             <label class="form-check-label" for="<?= $rid ?>" id="answer_text_<?= $i + 1 ?>"><?= htmlspecialchars($answers[$i]) ?></label>
                         </div>
@@ -63,8 +62,8 @@ foreach ($answers as $k => $a) {
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-primary" id="new-question">Submit Quiz</button>
-                    <button type="button" class="btn btn-danger" id="delete-question">Abandon Quiz</button>
+                    <button type="button" class="btn btn-primary" id="submit-attempt">Submit Quiz</button>
+                    <button type="button" class="btn btn-danger" id="abandon-attempt">Abandon Quiz</button>
                 </div>
 
             </form>

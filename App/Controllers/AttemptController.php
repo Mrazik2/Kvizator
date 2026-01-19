@@ -18,12 +18,40 @@ class AttemptController extends BaseController
 
     public function question(Request $request): Response
     {
+        if ($request->isAjax()) {
+            $data = $request->json();
+        }
+
         $quizId = $request->hasValue('id') ? $request->value('id') : null;
-        $questionCount = Quiz::getOne($quizId)?->getQuestionCount() ?? 0;
-        $question = Question::getAll("quizId = ? AND number = ?", [$quizId, 1])[0] ?? null;
-        if ($quizId === null || $questionCount === 0 || $question === null) {
+        if ($quizId === null) {
             return $this->redirect($this->url('home.index'));
         }
-        return $this->html(compact('question', 'quizId', 'questionCount'));
+        $quiz = Quiz::getOne($quizId);
+        $questionCount = $quiz?->getQuestionCount() ?? 0;
+        $question = Question::getAll("quizId = ? AND number = ?", [$quizId, 1])[0] ?? null;
+        if ($questionCount === 0 || $question === null) {
+            return $this->redirect($this->url('home.index'));
+        }
+
+
+        return $this->html(compact('question', 'attemptId', 'questionCount'));
+    }
+
+    public function delete(Request $request): Response
+    {
+        return $this->redirect($this->url('home.index'));
+    }
+
+    public function save(Request $request): Response
+    {
+        if ($request->isAjax()) {
+            $data = $request->json();
+        }
+        return $this->redirect($this->url('home.index'));
+    }
+
+    public function results(Request $request): Response
+    {
+        return $this->redirect($this->url('home.index'));
     }
 }

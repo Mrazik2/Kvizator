@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const answerTexts = [answers[0].value, answers[1].value, answers[2].value, answers[3].value];
             const indexChecked = radios.findIndex(radio => radio.checked);
-            await fetch("http://localhost/?c=Question&a=save",
+            await fetch("http://localhost/?c=question&a=save",
                 {
                     method: "POST",
                     body: JSON.stringify({
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function loadQuestion() {
         try {
-            let response = await fetch("http://localhost/?c=Question&a=edit",
+            let response = await fetch("http://localhost/?c=question&a=edit",
                 {
                     method: "POST",
                     body: JSON.stringify({
@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     answers[i].value = data.answers[i];
                     radios[i].checked = (data.correct - 1) === i;
                 }
-                radios[data.correct - 1].checked = true;
                 gotoInput.value = '';
             }
         } catch (ex) {
@@ -96,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function deleteQuestion() {
         try {
-            let response = await fetch("http://localhost/?c=Question&a=delete",
+            await fetch("http://localhost/?c=question&a=delete",
                 {
                     method: "DELETE",
                     body: JSON.stringify({
@@ -121,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    prevButton.addEventListener('click', async (e) => {
+    prevButton.addEventListener('click', async () => {
         if (questionNum <= 1) return;
         if (await saveQuestion()) {
             questionNum--;
@@ -131,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    nextButton.addEventListener('click', async (e) => {
+    nextButton.addEventListener('click', async () => {
         if (questionNum >= questionCount) return;
         if (await saveQuestion()) {
             questionNum++;
@@ -141,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    gotoButton.addEventListener('click', async (e) => {
+    gotoButton.addEventListener('click', async () => {
         const gotoVal = Number(gotoInput.value);
         if (gotoVal < 1 || gotoVal > questionCount) return;
         if (await saveQuestion()) {
@@ -152,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    newQuestionButton.addEventListener('click', async (e) => {
+    newQuestionButton.addEventListener('click', async () => {
         if (questionCount >= 50) return;
         if (await saveQuestion()) {
             questionNum = questionCount + 1;
@@ -168,13 +167,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    goBackButton.addEventListener('click', async (e) => {
+    goBackButton.addEventListener('click', async () => {
         if (await saveQuestion()) {
            window.location.href = form.action;
        }
     });
 
-    deleteButton.addEventListener('click', async (e) => {
+    deleteButton.addEventListener('click', async () => {
         if (questionCount === 1) return;
         if (await deleteQuestion()) {
             questionCount--;
