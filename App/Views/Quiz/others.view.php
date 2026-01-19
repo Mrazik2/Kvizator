@@ -27,7 +27,7 @@ use App\Models\User;
                 $descEsc = $desc ? nl2br(htmlspecialchars($desc, ENT_QUOTES, 'UTF-8')) : '<small class="text-muted">No description</small>';
                 $username = User::getOne($quiz->getCreatorId())?->getUsername() ?? 'Unknown';
                 $usernameEsc = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
-                $url = $link->url('quiz', ['id' => $id]);
+                $url = $link->url('attempt.question', ['id' => $id]);
                 $topic = $quiz->getTopic();
                 $topicEsc = $topic ? htmlspecialchars($topic, ENT_QUOTES, 'UTF-8') : '';
 

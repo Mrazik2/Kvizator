@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 orTopic = topic.value;
                 orDifficulty = difficulty.value;
                 quizId.value = data.quizId;
+                btnQuestions.href = `http://localhost/?c=Question&a=edit&id=${data.quizId}`;
                 btnFinish.classList.remove('disabled');
                 btnQuestions.classList.remove('disabled');
             }
