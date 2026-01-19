@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\Answer;
+use App\Models\Attempt;
 use App\Models\Question;
 use App\Models\Quiz;
 use Framework\Core\BaseController;
@@ -32,14 +34,31 @@ class AttemptController extends BaseController
         if ($questionCount === 0 || $question === null) {
             return $this->redirect($this->url('home.index'));
         }
+        $attempt = new Attempt();
+        $attempt->setUserId($this->user->isLoggedIn() ? $this->user->getIdentity()->getId() : null);
+        $attempt->setQuizId($quizId);
+        $attempt->setCorrectCount(0);
+        $attempt->save();
+        $attemptId = $attempt->getId();
 
+        for ($i = 0; $i < $quiz?->getQuestionCount(); $i++) {
+            $answer = new Answer();
+            $answer->setAttemptId($attemptId);
+            $answer->setNumber($i + 1);
+            $answer->setChosen(0);
+            $answer->setCorrect(0);
+            $answer->save();
+        }
 
         return $this->html(compact('question', 'attemptId', 'questionCount'));
     }
 
     public function delete(Request $request): Response
     {
-        return $this->redirect($this->url('home.index'));
+        if ($request->isAjax()) {
+            $data = $request->json();
+        }
+        throw new \Exception("Chyba pri ukladani otazky.");
     }
 
     public function save(Request $request): Response
@@ -47,7 +66,7 @@ class AttemptController extends BaseController
         if ($request->isAjax()) {
             $data = $request->json();
         }
-        return $this->redirect($this->url('home.index'));
+        throw new \Exception("Chyba pri ukladani otazky.");
     }
 
     public function results(Request $request): Response

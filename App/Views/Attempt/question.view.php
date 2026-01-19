@@ -8,16 +8,6 @@ $answers[0] = $question?->getAnswer1();
 $answers[1] = $question?->getAnswer2();
 $answers[2] = $question?->getAnswer3();
 $answers[3] = $question?->getAnswer4();
-
-// Filter out empty answers (trimmed). Keep original numeric keys for stable ordering.
-$filtered = [];
-foreach ($answers as $k => $a) {
-    $txt = $a === null ? '' : trim((string)$a);
-    if ($txt !== '') {
-        $filtered[$k] = $txt;
-    }
-}
-
 ?>
 
 <div class="container my-4">
