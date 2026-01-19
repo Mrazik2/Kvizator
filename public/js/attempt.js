@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const gotoButton = form.querySelector('#goto-question');
     const submitButton = form.querySelector('#submit-attempt');
     const abandonButton = form.querySelector('#abandon-attempt');
+    const clearButton = form.querySelector('#clear-answer');
 
     const questionText = form.querySelector('#question_text');
     const answerDivs = [form.querySelector('#answer_div_1'), form.querySelector('#answer_div_2'),
@@ -158,6 +159,10 @@ document.addEventListener('DOMContentLoaded', function () {
             checkButtons();
             changeLabel();
         }
+    });
+
+    clearButton.addEventListener('click', () => {
+        refreshChosen();
     });
 
     submitButton.addEventListener('click', async () => {

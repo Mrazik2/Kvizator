@@ -52,6 +52,7 @@ $answers[3] = $question?->getAnswer4();
                 </div>
 
                 <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-secondary" id="clear-answer">Clear Answer</button>
                     <button type="button" class="btn btn-primary" id="submit-attempt">Submit Quiz</button>
                     <button type="button" class="btn btn-danger" id="abandon-attempt">Abandon Quiz</button>
                 </div>
