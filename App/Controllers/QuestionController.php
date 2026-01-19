@@ -58,6 +58,9 @@ class QuestionController extends BaseController
         if ($request->isAjax()) {
             $data = $request->json();
             $quizId = $data->quizId;
+            if (Question::getCount("quizId = ?", [$quizId]) >= 50) {
+                throw new \Exception("Chyba pri ukladani otazky.");
+            }
             $number = $data->number;
             $questionText = $data->questionText;
             $answers = $data->answers;

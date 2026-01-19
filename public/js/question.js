@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             prevButton.classList.remove('preserve-hidden');
         }
+        newQuestionButton.hidden = questionCount >= 50;
+        deleteButton.hidden = questionCount <= 1;
     }
 
     async function saveQuestion() {
@@ -151,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     newQuestionButton.addEventListener('click', async (e) => {
+        if (questionCount >= 50) return;
         if (await saveQuestion()) {
             questionNum = questionCount + 1;
             questionCount++;
@@ -172,10 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     deleteButton.addEventListener('click', async (e) => {
-        if (questionCount === 1) {
-            alert("Cannot delete the only question in the quiz.");
-            return;
-        }
+        if (questionCount === 1) return;
         if (await deleteQuestion()) {
             questionCount--;
             if (questionNum > questionCount) {
