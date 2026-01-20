@@ -107,7 +107,6 @@ class AttemptController extends BaseController
         if ($attempt === null) {
             return $this->redirect($this->url('home.index'));
         }
-
         $answers = Answer::getAll("attemptId = ?", [$attempt->getId()]);
         $questions = Question::getAll("quizId = ?", [$attempt->getQuizId()]);
         if (count($answers) !== count($questions)) {
@@ -124,11 +123,29 @@ class AttemptController extends BaseController
         $attempt->setCorrectCount($correctCount);
         $attempt->save();
 
-        return $this->redirect($this->url('attempt.result'));
+        return $this->redirect($this->url('attempt.result', ['attemptId' => $attempt->getId()]));
     }
 
     public function result(Request $request): Response
     {
-        return $this->redirect($this->url('home.index'));
+        $attemptId = $request->hasValue('attemptId') ? $request->value('attemptId') : null;
+        $attempt = Attempt::getOne($attemptId);
+        $correctCount = $attempt->getCorrectCount();
+        $quiz = Quiz::getOne($attempt->getQuizId());
+        $allAttempts = Attempt::getCount("quizId = ? AND userId <> ?", [$quiz->getId(), $attempt->getUserId()]);
+        $worseAttempts = Attempt::getCount("quizId = ? AND correctCount < ?", [$quiz->getId(), $correctCount]);
+        $betterThanPercent = $allAttempts > 0 ? round(($worseAttempts / $allAttempts) * 100, 2) : 100.0;
+
+        return $this->html(compact('attemptId', 'quiz', 'correctCount', 'betterThanPercent'));
+    }
+
+    public function answer(Request $request): Response
+    {
+        if ($request->isAjax()) {
+
+        }
+
+
+        return $this->html();
     }
 }
