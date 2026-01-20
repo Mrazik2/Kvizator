@@ -32,16 +32,12 @@ $correct = $question?->getAnswer();
                     <?php for ($i = 0; $i < 4; $i++): ?>
                         <?php $num = $i + 1; $isCorrect = isset($correct) && ((int)$correct === $num); $isChosen = isset($chosen) && ((int)$chosen === $num); ?>
                         <div class="mb-2" <?= $answers[$i] === '' ? 'hidden' : '' ?> id="answer_div_<?= $num ?>">
-                            <div id="answer_text_<?= $num ?>" class="p-2 rounded <?= $isCorrect ? 'border border-success' : ($isChosen ? 'border border-primary' : 'border border-transparent') ?>">
-                                <?= htmlspecialchars($answers[$i]) ?>
-
-                                <?php if ($isChosen): ?>
-                                    <span class="badge bg-primary ms-2">Your choice</span>
-                                <?php endif; ?>
-
-                                <?php if ($isCorrect): ?>
-                                    <span class="badge bg-success ms-2">Correct</span>
-                                <?php endif; ?>
+                            <div id="answer_border_<?= $num ?>" class="p-2 rounded <?= $isCorrect ? 'border border-success' : ($isChosen ? 'border border-primary' : 'border border-transparent') ?>">
+                                <div id="answer_text_<?= $num ?>">
+                                    <?= htmlspecialchars($answers[$i]) ?>
+                                    <span class="badge bg-primary ms-2" <?= !$isChosen ? 'hidden' : '' ?> id="label_chosen_<?= $num ?>">Your choice</span>
+                                    <span class="badge bg-success ms-2" <?= !$isCorrect ? 'hidden' : '' ?> id="label_correct_<?= $num ?>">Correct</span>
+                                </div>
                             </div>
                         </div>
                     <?php endfor; ?>

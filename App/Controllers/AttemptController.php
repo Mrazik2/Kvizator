@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Answer;
 use App\Models\Attempt;
+use App\Models\Like;
 use App\Models\Question;
 use App\Models\Quiz;
 use Framework\Core\BaseController;
@@ -132,20 +133,86 @@ class AttemptController extends BaseController
         $attempt = Attempt::getOne($attemptId);
         $correctCount = $attempt->getCorrectCount();
         $quiz = Quiz::getOne($attempt->getQuizId());
-        $allAttempts = Attempt::getCount("quizId = ? AND userId <> ?", [$quiz->getId(), $attempt->getUserId()]);
+        $allAttempts = Attempt::getCount("quizId = ? AND id <> ?", [$quiz->getId(), $attemptId]);
         $worseAttempts = Attempt::getCount("quizId = ? AND correctCount < ?", [$quiz->getId(), $correctCount]);
         $betterThanPercent = $allAttempts > 0 ? round(($worseAttempts / $allAttempts) * 100, 2) : 100.0;
+        $liked = $this->user->isLoggedIn() ? Like::getCount("quizId = ? AND userId = ?", [$quiz->getId(), $this->user->getIdentity()->getId()]) : 0;
 
-        return $this->html(compact('attemptId', 'quiz', 'correctCount', 'betterThanPercent'));
+        return $this->html(compact('attemptId', 'quiz', 'correctCount', 'betterThanPercent', 'liked'));
+    }
+
+    public function like(Request $request): Response
+    {
+        if ($request->isAjax()) {
+            $data = $request->json();
+            if ($this->user->isLoggedIn()) {
+                $like = Like::getCount("quizId = ? AND userId = ?", [$data->quizId, $this->user->getIdentity()->getId()]) === 0 ? new Like() : null;
+                if ($like !== null) {
+                    $like->setQuizId($data->quizId);
+                    $like->setUserId($this->user->getIdentity()->getId());
+                    $like->save();
+                    return new EmptyResponse();
+                } else {
+                    throw new \Exception("Uzivatel uz lajkol tento quiz.");
+                }
+            } else {
+                throw new \Exception("Uzivatel nie je prihlaseny.");
+            }
+        } else {
+            throw new \Exception("Request nie je ajax.");
+        }
+    }
+
+    public function unlike(Request $request): Response
+    {
+        if ($request->isAjax()) {
+            $data = $request->json();
+            if ($this->user->isLoggedIn()) {
+                $like = Like::getAll("quizId = ? AND userId = ?", [$data->quizId, $this->user->getIdentity()->getId()])[0] ?? null;
+                if ($like !== null) {
+                    $like->delete();
+                    return new EmptyResponse();
+                } else {
+                    throw new \Exception("Uzivatel este nelajkol tento quiz.");
+                }
+            } else {
+                throw new \Exception("Uzivatel nie je prihlaseny.");
+            }
+        } else {
+            throw new \Exception("Request nie je ajax.");
+        }
     }
 
     public function answer(Request $request): Response
     {
         if ($request->isAjax()) {
-
+            $data = $request->json();
+            $question = Question::getAll("quizId = ? AND number = ?", [Attempt::getOne($data->attemptId)->getQuizId(), $data->number])[0] ?? null;
+            if ($question !== null) {
+                return $this->json([
+                    'questionText' => $question->getQuestion(),
+                    'answers' => [
+                        $question->getAnswer1(),
+                        $question->getAnswer2(),
+                        $question->getAnswer3(),
+                        $question->getAnswer4()
+                    ],
+                    'chosen' => Answer::getAll("attemptId = ? AND number = ?", [$data->attemptId, $data->number])[0]->getChosen(),
+                    'correct' => $question->getAnswer()
+                ]);
+            } else {
+                throw new \Exception("Otazka nenajdena.");
+            }
         }
 
-
-        return $this->html();
+        $attemptId = $request->hasValue('attemptId') ? $request->value('attemptId') : null;
+        $attempt = Attempt::getOne($attemptId);
+        if ($attempt === null) {
+            return $this->redirect($this->url('home.index'));
+        }
+        $questionCount = Quiz::getOne($attempt->getQuizId())->getQuestionCount();
+        $question = Question::getAll("quizId = ? AND number = ?", [$attempt->getQuizId(), 1])[0];
+        $chosen = Answer::getAll("attemptId = ? AND number = ?", [$attemptId, 1])[0]->getChosen();
+        return $this->html(compact('question', 'attemptId', 'questionCount', 'chosen'));
     }
 }

@@ -26,6 +26,8 @@
     <script src="<?= $link->asset('js/quizChecks.js') ?>"></script>
     <script src="<?= $link->asset('js/question.js') ?>"></script>
     <script src="<?= $link->asset('js/attempt.js') ?>"></script>
+    <script src="<?= $link->asset('js/answer.js') ?>"></script>
+    <script src="<?= $link->asset('js/result.js') ?>"></script>
 </head>
 <body>
 
