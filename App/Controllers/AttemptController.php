@@ -15,6 +15,14 @@ use Framework\Http\Responses\Response;
 class AttemptController extends BaseController
 {
 
+    public function authorize(Request $request, string $action): bool
+    {
+        if ($action === 'results') {
+            return $this->user->isLoggedIn();
+        }
+        return true;
+    }
+
     public function index(Request $request): Response
     {
         return $this->redirect($this->url('attempt.question'));
@@ -214,5 +222,11 @@ class AttemptController extends BaseController
         $question = Question::getAll("quizId = ? AND number = ?", [$attempt->getQuizId(), 1])[0];
         $chosen = Answer::getAll("attemptId = ? AND number = ?", [$attemptId, 1])[0]->getChosen();
         return $this->html(compact('question', 'attemptId', 'questionCount', 'chosen'));
+    }
+
+    public function results(Request $request): Response
+    {
+        $attempts = Attempt::getAll("userId = ?", [$this->user->getIdentity()->getId()]);
+        return $this->html(compact('attempts'));
     }
 }

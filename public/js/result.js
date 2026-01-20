@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             return response.ok;
-
         } catch (ex) {
             console.error(ex);
             return false;
@@ -31,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function unlike() {
         try {
-            await fetch("http://localhost/?c=attempt&a=unlike",
+            let response = await fetch("http://localhost/?c=attempt&a=unlike",
                 {
                     method: "DELETE",
                     body: JSON.stringify({
@@ -43,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         "Accept": "application/json"
                     }
                 });
-            return true;
+            return response.ok;
         } catch (ex) {
             console.error(ex);
             return false;

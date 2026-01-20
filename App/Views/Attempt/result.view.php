@@ -34,7 +34,7 @@ $percent = round(($correctCount / $quiz->getQuestionCount()) * 100, 2);
                     <div class="d-flex justify-content-center gap-2">
                         <a href="<?= $link->url('attempt.answer', ['attemptId' => $attemptId]) ?>" class="btn btn-secondary">Answers</a>
                         <button type="button" class="btn btn-outline-secondary" id="like-button"></button>
-                        <a href="<?= $link->url('home.index') ?>" class="btn btn-outline-primary">Home</a>
+                        <a href="<?= $link->url('attempt.results') ?>" class="btn btn-outline-primary">Home</a>
                     </div>
 
                 </div>
