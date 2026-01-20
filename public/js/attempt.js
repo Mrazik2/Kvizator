@@ -161,13 +161,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    clearButton.addEventListener('click', () => {
-        refreshChosen();
-    });
+    clearButton.addEventListener('click', refreshChosen);
 
     submitButton.addEventListener('click', async () => {
         if (await saveAnswer()) {
-            window.location.href = `http://localhost/?c=attempt&a=results&attemptId=${attemptId}`;
+            window.location.href = `http://localhost/?c=attempt&a=evaluate&attemptId=${attemptId}`;
         }
     });
 

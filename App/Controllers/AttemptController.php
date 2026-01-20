@@ -101,7 +101,33 @@ class AttemptController extends BaseController
         throw new \Exception("Request nie je ajax.");
     }
 
-    public function results(Request $request): Response
+    public function evaluate(Request $request): Response
+    {
+        $attempt = $request->hasValue('attemptId') ? Attempt::getOne($request->value('attemptId')) : null;
+        if ($attempt === null) {
+            return $this->redirect($this->url('home.index'));
+        }
+
+        $answers = Answer::getAll("attemptId = ?", [$attempt->getId()]);
+        $questions = Question::getAll("quizId = ?", [$attempt->getQuizId()]);
+        if (count($answers) !== count($questions)) {
+            return $this->redirect($this->url('home.index'));
+        }
+        $correctCount = 0;
+        for ($i = 0; $i < count($answers); $i++) {
+            if ($answers[$i]->getChosen() === $questions[$i]->getAnswer()) {
+                $answers[$i]->setCorrect(1);
+                $correctCount++;
+            }
+            $answers[$i]->save();
+        }
+        $attempt->setCorrectCount($correctCount);
+        $attempt->save();
+
+        return $this->redirect($this->url('attempt.result'));
+    }
+
+    public function result(Request $request): Response
     {
         return $this->redirect($this->url('home.index'));
     }
