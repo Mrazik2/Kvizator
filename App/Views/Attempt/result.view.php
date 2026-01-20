@@ -23,7 +23,7 @@ $percent = round(($correctCount / $quiz->getQuestionCount()) * 100, 2);
                     <h2 class="card-title">Quiz results</h2>
 
                     <p class="lead mb-1"><?= htmlspecialchars($quiz->getTitle()) ?></p>
-                    <p class="lead mb-1">You answered <strong><?= htmlspecialchars($correctCount) ?></strong> of <strong><?= htmlspecialchars($quiz->getQuestionCount()) ?></strong> questions correctly.</p>
+                    <p class="mb-1">You answered <strong><?= htmlspecialchars($correctCount) ?></strong> of <strong><?= htmlspecialchars($quiz->getQuestionCount()) ?></strong> questions correctly:</p>
 
                     <div class="progress mb-3" id="progressDiv">
                         <div class="progress-bar bg-success" role="progressbar" style="width: <?= $percent ?>%" aria-valuenow="<?= $percent ?>" aria-valuemin="0" aria-valuemax="100"><?= $percent ?>%</div>

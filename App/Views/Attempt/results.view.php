@@ -3,6 +3,7 @@
 /** @var \Framework\Support\LinkGenerator $link */
 
 use App\Models\Quiz;
+use App\Models\User;
 
 ?>
 
@@ -20,6 +21,8 @@ use App\Models\Quiz;
                 $title = htmlspecialchars($quiz->getTitle(), ENT_QUOTES, 'UTF-8');
                 $desc = $quiz->getDescription();
                 $descEsc = $desc ? nl2br(htmlspecialchars($desc, ENT_QUOTES, 'UTF-8')) : '<small class="text-muted">No description</small>';
+                $username = User::getOne($quiz->getCreatorId())?->getUsername() ?? 'Unknown';
+                $usernameEsc = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
                 $qCount = (int)$quiz->getQuestionCount();
                 $cCount = (int)$attempt->getCorrectCount();
 
@@ -80,6 +83,10 @@ use App\Models\Quiz;
                         <div class="card-footer bg-transparent border-0 mt-auto py-3">
                             <div class="mb-2">
                                 <span class="text-secondary"><?= $cCount ?>/<?= $qCount ?> <?= $qCount === 1 ? 'question' : 'questions' ?> correct</span>
+                            </div>
+
+                            <div>
+                                <small class="text-secondary">By: <?= $usernameEsc ?></small>
                             </div>
 
                             <div class="row g-2">

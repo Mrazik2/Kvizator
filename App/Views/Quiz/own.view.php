@@ -66,7 +66,7 @@
                 $editUrl = $link->url('quiz.edit', ['id' => $id]);
                 $deleteUrl = $link->url('quiz.delete', ['id' => $id, 'filter' => $currentFilter]);
                 $publishUrl = $link->url('quiz.publish', ['id' => $id, 'filter' => $currentFilter]);
-                $viewStatsUrl = $link->url('quiz.stats', ['id' => $id, 'filter' => $currentFilter]);
+                $viewStatsUrl = $link->url('quiz.stats', ['id' => $id]);
                 ?>
                 <div class="col-12 col-md-4">
                     <div class="card h-100 d-flex flex-column">

@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\Attempt;
+use App\Models\Like;
 use App\Models\Quiz;
 use App\Models\User;
 use Framework\Core\BaseController;
@@ -148,13 +150,35 @@ class QuizController extends BaseController
         $message = $request->hasValue('message') ? $request->value('message') : '';
 
         if ($filter === 'published') {
-            // only published quizzes
             $quizzes = Quiz::getAll("creatorId = ? AND published = ?", [$userId, 1]);
         } else {
-            // default: only unpublished (published = 0 or NULL)
             $quizzes = Quiz::getAll("creatorId = ? AND published = ?", [$userId, 0]);
         }
 
         return $this->html(compact('quizzes', 'filter', 'message'));
+    }
+
+    public function stats(Request $request): Response {
+        if (!$request->hasValue('id')) {
+            return $this->redirect($this->url("quiz.own"));
+        }
+        $quizId = $request->value('id');
+        $quiz = Quiz::getOne($quizId);
+        if ($quiz === null) {
+            return $this->redirect($this->url("quiz.own"));
+        }
+        $likedCount = Like::getCount("quizId = ?", [$quiz->getId()]);
+        $attemptsCount = Attempt::getCount("quizId = ?", [$quiz->getId()]);
+        if ($attemptsCount > 0) {
+            $allAttempts = Attempt::getAll("quizId = ?", [$quiz->getId()]);
+            $totalCorrect = 0;
+            foreach ($allAttempts as $attempt) {
+                $totalCorrect += $attempt->getCorrectCount();
+            }
+            $averageCorrect = round(($totalCorrect / ($quiz->getQuestionCount() * $attemptsCount)) * 100, 2);
+        } else {
+            $averageCorrect = 0;
+        }
+        return $this->html(compact('quiz', 'likedCount', 'attemptsCount', 'averageCorrect'));
     }
 }
