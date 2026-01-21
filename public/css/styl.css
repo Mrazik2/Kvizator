@@ -137,7 +137,6 @@ input:focus, textarea:focus, select:focus {
     margin: 0.5rem 0;
 }
 
-/* Reserve consistent width for prev/next so center stays centered even when hidden */
 .nav-button {
     width: 4.5rem;
     height: 2.5rem;
@@ -160,10 +159,15 @@ input:focus, textarea:focus, select:focus {
 .small { font-size: 0.9rem; color: #666; }
 
 @media (max-width: 600px) {
-    #titleName { font-size: 1.4rem; }
-    .nav-button { width: 3rem; }
-    .container { padding: 0.75rem; }
-
+    #titleName {
+        font-size: 1.4rem;
+    }
+    .nav-button {
+        width: 3rem;
+    }
+    .container {
+        padding: 0.75rem;
+    }
     .btn {
         border: 1px solid;
     }
