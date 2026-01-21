@@ -22,7 +22,7 @@ $percent = round(($correctCount / $quiz->getQuestionCount()) * 100, 2);
                 <div class="card-body text-center">
                     <h2 class="card-title">Quiz results</h2>
 
-                    <p class="lead mb-1"><?= htmlspecialchars($quiz->getTitle()) ?></p>
+                    <p class="lead mb-1" id="titleName"><?= htmlspecialchars($quiz->getTitle()) ?></p>
                     <p class="mb-1">You answered <strong><?= htmlspecialchars($correctCount) ?></strong> of <strong><?= htmlspecialchars($quiz->getQuestionCount()) ?></strong> questions correctly:</p>
 
                     <div class="progress mb-3" id="progressDiv">
@@ -34,7 +34,7 @@ $percent = round(($correctCount / $quiz->getQuestionCount()) * 100, 2);
                     <div class="d-flex justify-content-center gap-2">
                         <a href="<?= $link->url('attempt.answer', ['attemptId' => $attemptId]) ?>" class="btn btn-secondary">Answers</a>
                         <button type="button" class="btn btn-outline-secondary" id="like-button"></button>
-                        <a href="<?= $link->url('attempt.results') ?>" class="btn btn-outline-primary">Home</a>
+                        <a href="<?= $link->url('home.index') ?>" class="btn btn-outline-primary">Home</a>
                     </div>
 
                 </div>

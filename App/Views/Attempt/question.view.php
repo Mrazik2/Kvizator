@@ -23,7 +23,7 @@ $answers[3] = $question?->getAnswer4();
                     <h3 id="question_text" class="form-control-plaintext"><?= htmlspecialchars($question->getQuestion()) ?></h3>
                 </div>
 
-                <fieldset class="mb-3" id="options">
+                <fieldset class="mb-3" id="optionsQuestion">
 
                     <?php for ($i = 0; $i < 4; $i++): ?>
                         <?php $rid = 'answer_radio_' . $i + 1; ?>
